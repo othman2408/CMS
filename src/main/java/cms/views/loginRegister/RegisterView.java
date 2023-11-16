@@ -21,188 +21,297 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 import java.sql.SQLException;
 
+/**
+ * This class represents the registration view of the CMS application.
+ * It allows users to register by filling in their personal information and
+ * selecting a role.
+ * Upon successful registration, the user is redirected to the login page.
+ */
 @Route("register")
 @PageTitle("Register")
 @AnonymousAllowed
 public class RegisterView extends VerticalLayout {
 
-    public RegisterView() {
+        /**
+         * Constructor for RegisterView.
+         * Sets the layout and creates the registration form.
+         */
+        public RegisterView() {
+                setLayout();
+                Div registerForm = createRegisterForm();
+                add(registerForm);
+        }
 
-        // Center the content of the page both horizontally and vertically and horizontally
-        setAlignItems(Alignment.CENTER);
-        setJustifyContentMode(JustifyContentMode.CENTER);
-        setHeightFull();
+        /**
+         * Sets the layout of the RegisterView.
+         */
+        private void setLayout() {
+                setAlignItems(Alignment.CENTER);
+                setJustifyContentMode(JustifyContentMode.CENTER);
+                setHeightFull();
+        }
 
+        /**
+         * Creates the registration form.
+         * 
+         * @return A Div containing the registration form.
+         */
+        private Div createRegisterForm() {
+                Div div = new Div();
+                setFormStyles(div);
 
-        // Create the register form
-        Div registerForm = createRegisterForm();
-        add(registerForm);
+                Div header = createHeader();
+                Div fieldsContainer = createFieldsContainer();
 
-    }
+                div.add(header, fieldsContainer);
+                return div;
+        }
 
-    private Div createRegisterForm() {
+        /**
+         * Sets the styles for the registration form.
+         * 
+         * @param div The Div containing the registration form.
+         */
+        private void setFormStyles(Div div) {
+                div.getStyle()
+                                .set("display", "flex")
+                                .set("flex-direction", "column")
+                                .set("justify-content", "center")
+                                .set("align-items", "center")
+                                .set("background-color", "#f5f5f5")
+                                .set("border-radius", "5px")
+                                .set("box-shadow", "rgb(127 127 127 / 20%) 0px 0px 20px 0px")
+                                .set("border", "1px solid rgb(0 0 0 / 4%)")
+                                .set("font-family", "Roboto, sans-serif")
+                                .set("min-width", "400px")
+                                .set("width", "25%");
+        }
 
-        Div div = new Div();
+        /**
+         * Creates the header for the registration form.
+         * 
+         * @return A Div containing the header.
+         */
+        private Div createHeader() {
+                Div header = new Div();
+                H1 title = new H1("Welcome to CMS");
+                H4 subtitle = new H4("Register to continue");
 
-        // Apply styles directly using getStyle().set() method
-        div.getStyle()
-                .set("display", "flex")
-                .set("flex-direction", "column")
-                .set("justify-content", "center")
-                .set("align-items", "center")
-                .set("background-color", "#f5f5f5")
-                .set("border-radius", "5px")
-                .set("box-shadow", "rgb(127 127 127 / 20%) 0px 0px 20px 0px")
-                .set("border", "1px solid rgb(0 0 0 / 4%)")
-                .set("font-family", "Roboto, sans-serif")
-                .set("min-width", "400px")
-                .set("width", "25%");
+                title.getStyle()
+                                .set("font-size", "32px")
+                                .set("font-weight", "bold")
+                                .set("margin-bottom", "5px")
+                                .set("color", "white");
+                subtitle.getStyle()
+                                .set("font-size", "18px")
+                                .set("font-weight", "normal")
+                                .set("margin-top", "0px")
+                                .set("color", "white");
+                header.getStyle()
+                                .set("font-size", "24px")
+                                .set("font-weight", "bold")
+                                .set("background-color", "var(--lumo-primary-color)")
+                                .set("color", "white")
+                                .set("padding", "4rem 2rem")
+                                .set("border-radius", "5px 5px 0 0")
+                                .set("width", "-webkit-fill-available")
+                                .set("text-align", "center")
+                                .set("user-select", "none");
 
-        // Header
-        Div header = new Div();
-        H1 title = new H1("Welcome to CMS");
-        title.getStyle()
-                .set("font-size", "32px")
-                .set("font-weight", "bold")
-                .set("margin-bottom", "5px")
-                .set("color", "white");
-        H4 subtitle = new H4("Register to continue");
-        subtitle.getStyle()
-                .set("font-size", "18px")
-                .set("font-weight", "normal")
-                .set("margin-top", "0px")
-                .set("color", "white");
-        header.getStyle()
-                .set("font-size", "24px")
-                .set("font-weight", "bold")
-                .set("background-color", "var(--lumo-primary-color)")
-                .set("color", "white")
-                .set("padding", "4rem 2rem")
-                .set("border-radius", "5px 5px 0 0")
-                .set("width", "-webkit-fill-available")
-                .set("text-align", "center")
-                .set("user-select", "none");
-        header.add(title, subtitle);
+                header.add(title, subtitle);
+                return header;
+        }
 
+        /**
+         * Creates the container for the registration form fields.
+         * 
+         * @return A Div containing the fields container.
+         */
+        private Div createFieldsContainer() {
+                Div fieldsContainer = new Div();
+                setFieldsContainerStyles(fieldsContainer);
 
-        // fields Container
-        Div fieldsContainer = new Div();
-        fieldsContainer.getStyle()
-                .set("display", "flex")
-                .set("flex-direction", "column")
-                .set("justify-content", "center")
-                .set("align-items", "center")
-                .set("width", "85%")
-                .set("padding", "2rem 0");
+                TextField username = createTextField("Username", "Please enter your username", true);
+                PasswordField password = createPasswordField("Password", "Please enter your password", true);
+                TextField name = createTextField("Name", "Please enter your name", true);
+                EmailField email = createEmailField("Email", "Please enter your email", true);
+                Select<String> role = createRoleSelect();
 
+                Button registerButton = createRegisterButton(username, password, name, email, role);
 
-        // Create form elements
-        TextField username = new TextField("Username");
-        username.setPlaceholder("Please enter your username");
-        username.setRequired(true);
-        username.getStyle()
-                .set("margin-bottom", "15px")
-                .set("padding", "10px")
-                .set("border-radius", "4px")
-                .set("width", "100%");
+                fieldsContainer.add(name, username, password, email, role, registerButton);
+                return fieldsContainer;
+        }
 
-        PasswordField password = new PasswordField("Password");
-        password.setPlaceholder("Please enter your password");
-        password.setRequired(true);
-        password.getStyle()
-                .set("margin-bottom", "15px")
-                .set("padding", "10px")
-                .set("border-radius", "4px")
-                .set("width", "100%");
+        /**
+         * Sets the styles for the fields container.
+         * 
+         * @param fieldsContainer The Div containing the fields container.
+         */
+        private void setFieldsContainerStyles(Div fieldsContainer) {
+                fieldsContainer.getStyle()
+                                .set("display", "flex")
+                                .set("flex-direction", "column")
+                                .set("justify-content", "center")
+                                .set("align-items", "center")
+                                .set("width", "85%")
+                                .set("padding", "2rem 0");
+        }
 
-        TextField name = new TextField("Name");
-        name.setPlaceholder("Please enter your name");
-        name.setRequired(true);
-        name.getStyle()
-                .set("margin-bottom", "15px")
-                .set("padding", "10px")
-                .set("border-radius", "4px")
-                .set("width", "100%");
+        /**
+         * Creates a TextField with the given label, placeholder, and required status.
+         * 
+         * @param label       The label for the TextField.
+         * @param placeholder The placeholder for the TextField.
+         * @param required    Whether the TextField is required or not.
+         * @return The created TextField.
+         */
+        private TextField createTextField(String label, String placeholder, boolean required) {
+                TextField textField = new TextField(label);
+                textField.getStyle()
+                                .set("margin-bottom", "15px")
+                                .set("padding", "10px")
+                                .set("border-radius", "4px")
+                                .set("width", "100%");
+                return textField;
+        }
 
-        EmailField email = new EmailField("Email");
-        email.setPlaceholder("Please enter your email");
-        email.setRequired(true);
-        email.getStyle()
-                .set("margin-bottom", "15px")
-                .set("padding", "10px")
-                .set("border-radius", "4px")
-                .set("width", "100%");
+        /**
+         * Creates a PasswordField with the given label, placeholder, and required
+         * status.
+         * 
+         * @param label       The label for the PasswordField.
+         * @param placeholder The placeholder for the PasswordField.
+         * @param required    Whether the PasswordField is required or not.
+         * @return The created PasswordField.
+         */
+        private PasswordField createPasswordField(String label, String placeholder, boolean required) {
+                PasswordField passwordField = new PasswordField(label);
+                passwordField.getStyle()
+                                .set("margin-bottom", "15px")
+                                .set("padding", "10px")
+                                .set("border-radius", "4px")
+                                .set("width", "100%");
+                return passwordField;
+        }
 
-        Select<String> role = new Select<>();
-        role.setPlaceholder("Role");
-        role.setLabel("Role");
-        role.setItems("Organizer", "Author", "Reviewer");
-        role.setValue("Organizer");
-        role.getStyle()
-                .set("margin-bottom", "15px")
-                .set("padding", "10px")
-                .set("border-radius", "4px")
-                    .set("width", "100%");
+        /**
+         * Creates an EmailField with the given label, placeholder, and required status.
+         * 
+         * @param label       The label for the EmailField.
+         * @param placeholder The placeholder for the EmailField.
+         * @param required    Whether the EmailField is required or not.
+         * @return The created EmailField.
+         */
+        private EmailField createEmailField(String label, String placeholder, boolean required) {
+                EmailField emailField = new EmailField(label);
+                emailField.getStyle()
+                                .set("margin-bottom", "15px")
+                                .set("padding", "10px")
+                                .set("border-radius", "4px")
+                                .set("width", "100%");
+                return emailField;
+        }
 
-        // Create register button
-        Button registerButton = new Button("Register");
-        registerButton.getStyle()
-                .set("margin-bottom", "15px")
-                .set("padding", "10px")
-                .set("border-radius", "4px")
-                .set("width", "100%")
-                .set("background-color", "var(--lumo-primary-color)")
-                .set("color", "white")
-                .setCursor("pointer");
+        /**
+         * Creates a Select with the available roles.
+         * 
+         * @return The created Select.
+         */
+        private Select<String> createRoleSelect() {
+                Select<String> role = new Select<>();
+                role.setItems("Organizer", "Author", "Reviewer");
+                role.getStyle()
+                                .set("margin-bottom", "15px")
+                                .set("padding", "10px")
+                                .set("border-radius", "4px")
+                                .set("width", "100%");
+                return role;
+        }
 
-        registerButton.addClickListener(e -> {
-            // Validate the fields
-            if (username.isEmpty() || password.isEmpty() || name.isEmpty() || email.isEmpty()) {
-                Notify.notify("Please fill all the fields", 3000, "warning");
-            } else {
-                // Create a user object
-                User user = switch (role.getValue()) {
-                    case "Organizer" -> new Organizer(username.getValue(), password.getValue(), name.getValue(), email.getValue());
-                    case "Author" -> new Author(username.getValue(), password.getValue(), name.getValue(), email.getValue());
-                    case "Reviewer" -> new Reviewer(username.getValue(), password.getValue(), name.getValue(), email.getValue());
-                    default -> throw new IllegalStateException("Unexpected value: " + role.getValue());
-                };
-                System.out.println(user.getName() + " "
-                        + user.getUsername() +  " "
-                        + user.getPassword() + " "
-                        + user.getEmail() + " "
-                        + user.getClass().getSimpleName());
+        /**
+         * Creates the Register button and sets its click listener.
+         * 
+         * @param username The TextField for the username.
+         * @param password The PasswordField for the password.
+         * @param name     The TextField for the name.
+         * @param email    The EmailField for the email.
+         * @param role     The Select for the role.
+         * @return The created Register button.
+         */
+        private Button createRegisterButton(TextField username, PasswordField password, TextField name,
+                        EmailField email, Select<String> role) {
+                Button registerButton = new Button("Register");
+                registerButton.getStyle()
+                                .set("margin-bottom", "15px")
+                                .set("padding", "10px")
+                                .set("border-radius", "4px")
+                                .set("width", "100%")
+                                .set("background-color", "var(--lumo-primary-color)")
+                                .set("color", "white")
+                                .setCursor("pointer");
 
-                // Register the user
-                try {
-                    registerUser(user);
-                    Notify.notify("User registered successfully", 3000, "success");
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                    Notify.notify("Error: " + throwables.getMessage(), 3000, "error");
+                registerButton.addClickListener(e -> handleRegistration(username, password, name, email, role));
+
+                return registerButton;
+        }
+
+        /**
+         * Handles the registration process.
+         * 
+         * @param username The TextField for the username.
+         * @param password The PasswordField for the password.
+         * @param name     The TextField for the name.
+         * @param email    The EmailField for the email.
+         * @param role     The Select for the role.
+         */
+        private void handleRegistration(TextField username, PasswordField password, TextField name,
+                        EmailField email, Select<String> role) {
+                if (username.isEmpty() || password.isEmpty() || name.isEmpty() || email.isEmpty()) {
+                        Notify.notify("Please fill all the fields", 3000, "warning");
+                } else {
+                        User user = switch (role.getValue()) {
+                                case "Organizer" -> new Organizer(username.getValue(), password.getValue(),
+                                                name.getValue(), email.getValue());
+                                case "Author" -> new Author(username.getValue(), password.getValue(), name.getValue(),
+                                                email.getValue());
+                                case "Reviewer" -> new Reviewer(username.getValue(), password.getValue(),
+                                                name.getValue(), email.getValue());
+                                default -> throw new IllegalStateException("Unexpected value: " + role.getValue());
+                        };
+                        System.out.println(user.getName() + " "
+                                        + user.getUsername() + " "
+                                        + user.getPassword() + " "
+                                        + user.getEmail() + " "
+                                        + user.getClass().getSimpleName());
+
+                        try {
+                                registerUser(user);
+                                Notify.notify("User registered successfully", 2000, "success");
+
+                                getUI().ifPresent(ui -> ui.getPage().executeJs(
+                                                "setTimeout(function() { window.location.href = ''; }, 2000)"));
+
+                        } catch (SQLException throwables) {
+                                throwables.printStackTrace();
+                                Notify.notify("Error: " + throwables.getMessage(), 3000, "error");
+                        }
                 }
+        }
 
-            }
-        });
-
-
-
-        fieldsContainer.add(name, username, password , email, role, registerButton);
-        div.add(header, fieldsContainer);
-
-        return div;
-    }
-
-    private void registerUser(User user) throws SQLException {
-            DBConnector db = new DBConnector();
-            try {
-                db.registerUser(user);
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-                throw throwables; // Re-throw the exception for handling in the calling code
-            }
-    }
-
-
-
+        /**
+         * Registers a user in the database.
+         * 
+         * @param user The User to be registered.
+         * @throws SQLException If there is an error with the database connection.
+         */
+        private void registerUser(User user) throws SQLException {
+                DBConnector db = new DBConnector();
+                try {
+                        db.registerUser(user);
+                } catch (SQLException throwable) {
+                        throwable.printStackTrace();
+                        throw throwable;
+                }
+        }
 }
