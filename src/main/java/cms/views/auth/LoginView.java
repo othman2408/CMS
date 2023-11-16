@@ -1,18 +1,20 @@
 package cms.views.auth;
 
+import cms.DB.DBConnector;
 import cms.views.shardCom.Notify;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+
+import java.sql.SQLException;
 
 @Route("")
 @PageTitle("Login")
@@ -28,7 +30,8 @@ public class LoginView extends VerticalLayout {
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
         setHeightFull();
-        getStyle().set("background-image", " linear-gradient(120deg, rgb(255 255 255 / 23%) 0%, rgb(235 237 238 / 44%) 100%)");
+        getStyle().set("background-image",
+                " linear-gradient(120deg, rgb(255 255 255 / 23%) 0%, rgb(235 237 238 / 44%) 100%)");
     }
 
     private Div createLoginForm() {
@@ -103,7 +106,6 @@ public class LoginView extends VerticalLayout {
 
         Button registerButton = createRegisterButton();
 
-
         fieldsContainer.add(username, password, loginButton, registerButton);
         return fieldsContainer;
     }
@@ -141,7 +143,13 @@ public class LoginView extends VerticalLayout {
                 .set("color", "white")
                 .setCursor("pointer");
 
-        loginButton.addClickListener(e -> handleLogin(username, password));
+        loginButton.addClickListener(e -> {
+            try {
+                handleLogin(username, password);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
         return loginButton;
     }
 
@@ -168,9 +176,23 @@ public class LoginView extends VerticalLayout {
         UI.getCurrent().navigate("register");
     }
 
-    private void handleLogin(TextField username, PasswordField password) {
+    private void handleLogin(TextField username, PasswordField password) throws SQLException {
+       DBConnector dbConnector = new DBConnector();
         if (username.isEmpty() || password.isEmpty()) {
             Notify.notify("Please fill all the fields", 3000, "warning");
         }
+        else {
+            try {
+                if (dbConnector.login(username.getValue(), password.getValue())) {
+                    Notify.notify("Login successful", 3000, "success");
+                }
+                else {
+                    Notify.notify("Invalid username or password", 3000, "error");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 }

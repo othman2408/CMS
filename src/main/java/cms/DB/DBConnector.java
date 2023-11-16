@@ -7,10 +7,9 @@ import java.sql.*;
 import java.util.List;
 
 public class DBConnector {
-    public String dburl = null;
-    public String user = null;
-    public String pass = null;
-
+     public String dburl = null;
+     public String user = null;
+     public String pass = null;
 
 
     Statement stmt;
@@ -23,14 +22,12 @@ public class DBConnector {
     }
 
     public Connection getConnection(String username, String password) throws SQLException {
-        Connection conn = DriverManager.getConnection(dburl, username, password);
-        return conn;
+        return DriverManager.getConnection(dburl, username, password);
     }
 
     public void closeConnection() throws SQLException {
         conn.close();
     }
-
 
     public boolean registerUser(User user) throws SQLException {
         // Ensure the statement is initialized before using it
@@ -60,6 +57,35 @@ public class DBConnector {
         }
     }
 
+    // login method
+    public boolean login(String username, String password) throws SQLException {
+        // Ensure the statement is initialized before using it
+        if (stmt != null) {
+            try {
+                // Use PreparedStatement to avoid SQL injection
+                String sql = "SELECT * FROM USERS WHERE USERNAME = ? AND PASSWORD = ?";
+                java.sql.PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+                // Set parameters
+                preparedStatement.setString(1, username);
+                preparedStatement.setString(2, password);
+
+                // Execute the query
+                rs = preparedStatement.executeQuery();
+
+                // Check if the result set is empty
+                if (rs.next()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw e; // Re-throw the exception for handling in the calling code
+            }
+        }
+        return false;
+    }
 
     public static void main(String[] args) {
         User u1 = new Organizer("dsds", "123", "Othman alibrahim", "dsd");
