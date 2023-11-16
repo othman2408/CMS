@@ -1,4 +1,4 @@
-package cms.views.loginRegister;
+package cms.views.auth;
 
 import cms.DB.DBConnector;
 import cms.Entity.Author;
@@ -7,9 +7,7 @@ import cms.Entity.Reviewer;
 import cms.Entity.User;
 import cms.views.shardCom.Notify;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.H4;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.EmailField;
@@ -95,12 +93,12 @@ public class RegisterView extends VerticalLayout {
         private Div createHeader() {
                 Div header = new Div();
                 H1 title = new H1("Welcome to CMS");
-                H4 subtitle = new H4("Register to continue");
+                Span subtitle = new Span("Register to continue");
 
                 title.getStyle()
                                 .set("font-size", "32px")
                                 .set("font-weight", "bold")
-                                .set("margin-bottom", "5px")
+                                .set("margin-bottom", "2px")
                                 .set("color", "white");
                 subtitle.getStyle()
                                 .set("font-size", "18px")
@@ -110,12 +108,11 @@ public class RegisterView extends VerticalLayout {
                 header.getStyle()
                                 .set("font-size", "24px")
                                 .set("font-weight", "bold")
-                                .set("background-color", "var(--lumo-primary-color)")
+                                .set("background-image", "linear-gradient(135deg, #667eea 0%, #764ba2 100%)")
                                 .set("color", "white")
-                                .set("padding", "4rem 2rem")
+                                .set("padding", "6rem 2rem 2rem 2rem")
                                 .set("border-radius", "5px 5px 0 0")
                                 .set("width", "-webkit-fill-available")
-                                .set("text-align", "center")
                                 .set("user-select", "none");
 
                 header.add(title, subtitle);
@@ -168,6 +165,8 @@ public class RegisterView extends VerticalLayout {
          */
         private TextField createTextField(String label, String placeholder, boolean required) {
                 TextField textField = new TextField(label);
+                textField.setPlaceholder(placeholder);
+                textField.setRequired(required);
                 textField.getStyle()
                                 .set("margin-bottom", "15px")
                                 .set("padding", "10px")
@@ -179,7 +178,7 @@ public class RegisterView extends VerticalLayout {
         /**
          * Creates a PasswordField with the given label, placeholder, and required
          * status.
-         * 
+         *
          * @param label       The label for the PasswordField.
          * @param placeholder The placeholder for the PasswordField.
          * @param required    Whether the PasswordField is required or not.
@@ -187,6 +186,8 @@ public class RegisterView extends VerticalLayout {
          */
         private PasswordField createPasswordField(String label, String placeholder, boolean required) {
                 PasswordField passwordField = new PasswordField(label);
+                passwordField.setPlaceholder(placeholder);
+                passwordField.setRequired(required);
                 passwordField.getStyle()
                                 .set("margin-bottom", "15px")
                                 .set("padding", "10px")
@@ -205,6 +206,8 @@ public class RegisterView extends VerticalLayout {
          */
         private EmailField createEmailField(String label, String placeholder, boolean required) {
                 EmailField emailField = new EmailField(label);
+                emailField.setPlaceholder(placeholder);
+                emailField.setRequired(required);
                 emailField.getStyle()
                                 .set("margin-bottom", "15px")
                                 .set("padding", "10px")
@@ -220,7 +223,9 @@ public class RegisterView extends VerticalLayout {
          */
         private Select<String> createRoleSelect() {
                 Select<String> role = new Select<>();
+                role.setLabel("Role");
                 role.setItems("Organizer", "Author", "Reviewer");
+                role.setPlaceholder("Please select your role");
                 role.getStyle()
                                 .set("margin-bottom", "15px")
                                 .set("padding", "10px")
@@ -247,7 +252,7 @@ public class RegisterView extends VerticalLayout {
                                 .set("padding", "10px")
                                 .set("border-radius", "4px")
                                 .set("width", "100%")
-                                .set("background-color", "var(--lumo-primary-color)")
+                                .set("background-color", "hsl(236.29deg 47.78% 60.2%)")
                                 .set("color", "white")
                                 .setCursor("pointer");
 
@@ -267,7 +272,7 @@ public class RegisterView extends VerticalLayout {
          */
         private void handleRegistration(TextField username, PasswordField password, TextField name,
                         EmailField email, Select<String> role) {
-                if (username.isEmpty() || password.isEmpty() || name.isEmpty() || email.isEmpty()) {
+                if (username.isEmpty() || password.isEmpty() || name.isEmpty() || email.isEmpty() || role.isEmpty()) {
                         Notify.notify("Please fill all the fields", 3000, "warning");
                 } else {
                         User user = switch (role.getValue()) {
