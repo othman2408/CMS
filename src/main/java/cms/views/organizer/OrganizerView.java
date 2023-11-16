@@ -1,4 +1,4 @@
-package cms.views.registerconference;
+package cms.views.organizer;
 
 import cms.views.MainLayout;
 import com.vaadin.flow.component.Key;
@@ -8,17 +8,16 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
 
 @PageTitle("Register Conference")
-@Route(value = "register-conference", layout = MainLayout.class)
-@RouteAlias(value = "", layout = MainLayout.class)
-public class RegisterConferenceView extends HorizontalLayout {
+@Route(value = "organizer", layout = MainLayout.class)
+//@RouteAlias(value = "", layout = MainLayout.class)
+public class OrganizerView extends HorizontalLayout {
 
     private TextField name;
     private Button sayHello;
 
-    public RegisterConferenceView() {
+    public OrganizerView() {
         name = new TextField("Your name");
         sayHello = new Button("Say hello");
         sayHello.addClickListener(e -> {
