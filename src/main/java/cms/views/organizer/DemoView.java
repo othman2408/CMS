@@ -69,7 +69,7 @@ public class DemoView extends VerticalMenu {
                 .set("width", "auto")
                 .set("padding", "0 3rem")
                 .set("margin", "auto")
-                .set("background-image", "linear-gradient(to top, rgb(6 185 106 / 35%) 0%, rgb(60 186 146 / 68%) 100%)")
+                .set("background-image", "linear-gradient(to top, rgb(6 185 106 / 35%) 0%, rgb(60 186 146 / 68%) 100%)  ")
                 .set("color", "white")
                 .set("font-weight", "bold")
                 .set("font-size", "16px")

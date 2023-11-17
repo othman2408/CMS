@@ -16,12 +16,12 @@ public class Conference implements Serializable {
     private List<Reviewer> reviewers;
     private List<Venue> venues;
     private List<Paper> papers;
+    private Organizer organizerId;
 
     public Conference() {
     }
 
-    public Conference( String name, LocalDate startDate, LocalDate endDate, LocalDate deadline, String conferenceCode, List<Reviewer> reviewers, List<Venue> venues, List<Paper> papers) {
-        this.conferenceId = conferenceId;
+    public Conference( String name, LocalDate startDate, LocalDate endDate, LocalDate deadline, String conferenceCode, List<Reviewer> reviewers, List<Venue> venues, List<Paper> papers, Organizer organizerId) {
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -30,6 +30,7 @@ public class Conference implements Serializable {
         this.reviewers = reviewers;
         this.venues = venues;
         this.papers = papers;
+        this.organizerId = organizerId;
     }
 
     public int getConferenceId() {
@@ -104,6 +105,14 @@ public class Conference implements Serializable {
         this.papers = papers;
     }
 
+    public Organizer getOrganizerId() {
+        return organizerId;
+    }
+
+    public void setOrganizerId(Organizer organizerId) {
+        this.organizerId = organizerId;
+    }
+
     @Override
     public String toString() {
         return "Conference{" +
@@ -116,6 +125,7 @@ public class Conference implements Serializable {
                 ", reviewers=" + reviewers +
                 ", venues=" + venues +
                 ", papers=" + papers +
+                ", organizerId=" + organizerId +
                 '}';
     }
 }
