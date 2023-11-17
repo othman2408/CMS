@@ -200,7 +200,6 @@ public class DBConnector {
     public static void main(String[] args) throws SQLException {
         DBConnector dbConnector = new DBConnector();
 
-        System.out.println(dbConnector.getUser("othman").getName());
     }
 
 }

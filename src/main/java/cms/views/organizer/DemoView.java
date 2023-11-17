@@ -4,11 +4,15 @@ import cms.Entity.CMS;
 import cms.Entity.Reviewer;
 import cms.Entity.User;
 import cms.Entity.Venue;
+import cms.views.shardCom.Notify;
 import com.flowingcode.vaadin.addons.verticalmenu.VerticalMenu;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
@@ -32,22 +36,21 @@ public class DemoView extends VerticalMenu {
     }
 
     public DemoView() throws SQLException {
-        super(new Section(new H1("Dashboard"), userCard(dbConnector.getUser(loggedInUser))),
+        super(new Section(new H1("Account"), userCard(dbConnector.getUser(loggedInUser))),
                 new Section(new H1("Create Conferences"), createConferences()),
                 new Section(new H1("Papers")),
                 new Section(new H1("Reviewers")),
                 new Section(new H1("Venues")));
 
-        getSections().get(0).getStyle().set("background-color", "green");
         reloadSections();
-        addMenuSelectedListener(ev->{
-            Notification.show("Section: " + ev.getSource().getElement().getChild(0).getText() + " clicked.");
-        });
+//        addMenuSelectedListener(ev->{
+//            Notification.show("Section: " + ev.getSource().getElement().getChild(0).getText() + " clicked.");
+//        });
 
         // Change colors
         getSections().get(0).getStyle().set("background-image", "linear-gradient(60deg, #29323c 0%, #485563 100%)");
         getSections().get(1).getStyle().set("background-image", "linear-gradient(-20deg, #616161 0%, #9bc5c3 100%)");
-        getSections().get(2).getStyle().set("background-image", "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)");
+        getSections().get(2).getStyle().set("background-image", "linear-gradient(to top, #e6b980 0%, #eacda3 100%)");
         getSections().get(3).getStyle().set("background-image", "linear-gradient(135deg, #5ee7df 0%, #b490ca 100%)");
         getSections().get(4).getStyle().set("background-image", "linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)");
 
@@ -150,7 +153,7 @@ public class DemoView extends VerticalMenu {
     private static Div userCard(User user){
         Div card = new Div();
         card.getStyle()
-                .set("background-image", "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)")
+                .set("background-image", "linear-gradient(to top, rgb(122 183 233 / 74%) 0%, rgb(160 185 157) 100%)")
                 .set("border-radius", "8px")
                 .set("padding", "3rem 1rem 1rem 1rem")
                 .set("width", "90%")
@@ -181,7 +184,9 @@ public class DemoView extends VerticalMenu {
 
         Span role = new Span("Organizer");
         role.getElement().getThemeList().add("badge pill");
-        role.getStyle().set("user-select", "none");
+        role.getStyle().set("user-select", "none")
+                .set("background-image", "linear-gradient(135deg, #f5f7fa 0%, #b9bee39e 100%)")
+                .set("font-weight", "bold");
 
         firstRow.add(avatar, role);
 
@@ -189,18 +194,18 @@ public class DemoView extends VerticalMenu {
         secondRow.getStyle()
                 .set("display", "flex")
                 .set("flex-direction", "column")
-                .set("gap", "14px")
                 .set("font-family", "Noto Sans")
                 .set("text-align", "left")
                 .set("margin-bottom", "10px")
                 .set("padding-bottom", "15px")
-                .set("border-bottom", "1px solid rgb(0 0 0 / 5%)");
+                .set("border-bottom", "1px solid rgb(0 0 0 / 5%)")
+                .set("font-weight", "600");
 
-        H4 ID = new H4("ID: " + String.valueOf(user.getId()));
+        Paragraph ID = new Paragraph("ID: " + String.valueOf(user.getId()));
 
-        H4 name = new H4("Name: " + user.getName());
+        Paragraph name = new Paragraph("Name: " + user.getName());
 
-        H4 email = new H4("Email: " + user.getEmail());
+        Paragraph email = new Paragraph("Email: " + user.getEmail());
 
         secondRow.add(ID, name, email);
 
@@ -209,7 +214,8 @@ public class DemoView extends VerticalMenu {
                 .set("display", "flex")
                 .set("align-items", "center")
                 .set("justify-content", "center")
-                .set("flex-direction", "column");
+                .set("flex-direction", "column")
+                .set("gap", "6px");
 
         Button edit = new Button("Edit");
         edit.getStyle().set("margin-top", "20px")
@@ -217,20 +223,41 @@ public class DemoView extends VerticalMenu {
                 .set("width", "auto")
                 .set("padding", "0 2.5rem")
                 .set("margin", "auto")
-                .set("background-image", "linear-gradient(to top, #4481ebe6 0%, #04befe 100%)")
+                .set("background", "rgb(107 156 187)")
                 .set("color", "white")
                 .set("font-weight", "bold")
                 .set("font-size", "16px")
-                .set("cursor", "pointer");
+                .set("cursor", "pointer")
+                .set("border", "1px solid #00000017");
+
+        handleEdit(edit);
 
         Button logout = new Button("Logout");
+        logout.setIcon(new Icon(VaadinIcon.SIGN_OUT));
         logout.getStyle()
-                        .set("background", "transparent");
+                .set("background", "transparent")
+                .set("cursor", "pointer")
+                .set("color", "rgb(209 46 46 / 71%)");
+
+        handleLogout(logout);
 
         thirdRow.add(edit, logout);
 
         card.add(firstRow, secondRow, thirdRow);
 
         return card;
+    }
+
+    private static void handleEdit(Button edit) {
+        edit.addClickListener(e -> {
+            Notify.notify("Not now", 3000, "warning");
+        });
+    }
+
+    private static void handleLogout(Button logout) {
+        logout.addClickListener(e -> {
+            VaadinSession.getCurrent().close();
+            UI.getCurrent().getPage().executeJs("window.location.href = 'login'");
+        });
     }
 }
