@@ -22,7 +22,7 @@ import com.vaadin.flow.server.VaadinSession;
 import java.sql.SQLException;
 import java.util.List;
 
-public class DemoView extends VerticalMenu {
+public class organizerDashboard extends VerticalMenu {
     public static String loggedInUser = VaadinSession.getCurrent().getAttribute("username").toString();
     private static CMS cms = new CMS();
     private static cms.DB.DBConnector dbConnector;
@@ -35,9 +35,9 @@ public class DemoView extends VerticalMenu {
         }
     }
 
-    public DemoView() throws SQLException {
+    public organizerDashboard() throws SQLException {
         super(new Section(new H1("Account"), userCard(dbConnector.getUser(loggedInUser))),
-                new Section(new H1("Create Conferences"), createConferences()),
+                new Section(new H1("Register Conferences"), createConferences()),
                 new Section(new H1("Papers")),
                 new Section(new H1("Reviewers")),
                 new Section(new H1("Venues")));
@@ -84,7 +84,7 @@ public class DemoView extends VerticalMenu {
         Select<String> reviewerSelect = createReviewerSelect(cms.getReviewers());
         Select<String> venueSelect = createVenueSelect(dbConnector.getVenues());
 
-        Button Create = new Button("Create");
+        Button Create = new Button("Register");
         Create.getStyle().set("margin-top", "15px")
                 .set("border-radius", "4px")
                 .set("width", "auto")

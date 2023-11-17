@@ -20,8 +20,8 @@ public class OrganizerView extends HorizontalLayout {
 
         setSizeFull();
 
-        DemoView demoView = new DemoView();
-        add(demoView);
+        organizerDashboard dashboard = new organizerDashboard();
+        add(dashboard);
 
     }
 
