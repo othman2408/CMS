@@ -1,8 +1,8 @@
 package cms.Entity;
 
-import cms.LocalFileStorage.FileHandler;
+import cms.DB.DBConnector;
 
-import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.List;
 
 public class CMS {
@@ -10,6 +10,8 @@ public class CMS {
     private List<Conference> conferences;
     private List<Reservation> reservations;
     private List<Payment> payments;
+
+    private DBConnector dbConnector;
 
     public CMS() {
     }
@@ -27,6 +29,11 @@ public class CMS {
 
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    public List<Reviewer> getReviewers() throws SQLException {
+        dbConnector = new DBConnector();
+        return dbConnector.getReviewers();
     }
 
     public List<Conference> getConferences() {
@@ -53,52 +60,8 @@ public class CMS {
         this.payments = payments;
     }
 
-    public boolean registerUser(User user) {
-        FileHandler file = new FileHandler("src/main/java/cms/LocalFileStorage/users.dat");
-        try {
-            List<User> users = file.readAllObjects();
-            for (User u : users) {
-                if (u.getUsername().equals(user.getUsername())) {
-                    return false;
-                }
-            }
-            users.add(user);
-            file.saveObject((Serializable) users);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public User findUser(User user) {
-        FileHandler file = new FileHandler("src/main/java/cms/LocalFileStorage/users.dat");
-        try {
-            List<User> users = file.readAllObjects();
-            for (User u : users) {
-                if (u.getUsername().equals(user.getUsername()) && u.getPassword().equals(user.getPassword())) {
-                    return u;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     public static void main(String[] args) {
-        CMS cms = new CMS();
-
-        User u1 = new Organizer("othman", "123", "Othman alibrahim", "othman@gmail.com");
-        User u2 = new Author("ahmad", "123", "Ahmad alibrahim", "ahmed@mail.com");
-        User u3 = new Reviewer("ali", "123",    "Ali alibrahim", "ali@mail.com");
-
-        System.out.println(u1.getClass().getSimpleName());
-
-//        cms.registerUser(u1);
-//        cms.registerUser(u2);
-//        cms.registerUser(u3);
-
 
 
     }

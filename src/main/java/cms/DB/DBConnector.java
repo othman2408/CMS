@@ -1,13 +1,18 @@
 package cms.DB;
 
+import cms.Entity.Reviewer;
 import cms.Entity.User;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DBConnector {
      public String dburl = null;
      public String user = null;
      public String pass = null;
+
+
 
 
 
@@ -114,11 +119,33 @@ public class DBConnector {
         return null;
     }
 
+    public List<Reviewer> getReviewers() {
+        List<Reviewer> reviewers = new ArrayList<>();
+
+        String sql = "SELECT * FROM USERS WHERE ROLE = 'Reviewer'";
+
+        if(stmt != null) {
+            try {
+                rs = stmt.executeQuery(sql);
+                while(rs.next()) {
+                    reviewers.add(new Reviewer(rs.getString("USERNAME"), rs.getString("PASSWORD"), rs.getString("NAME"), rs.getString("EMAIL")));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return reviewers;
+    }
+
+
 
     public static void main(String[] args) throws SQLException {
         DBConnector dbConnector = new DBConnector();
 
-        System.out.println(dbConnector.getUserRole("othman"));
+        for(Reviewer reviewer : dbConnector.getReviewers()) {
+            System.out.println(reviewer);
+        }
     }
 
 }

@@ -20,7 +20,7 @@ public class Conference implements Serializable {
     public Conference() {
     }
 
-    public Conference(int conferenceId, String name, LocalDate startDate, LocalDate endDate, LocalDate deadline, String conferenceCode, List<Reviewer> reviewers, List<Venue> venues, List<Paper> papers) {
+    public Conference( String name, LocalDate startDate, LocalDate endDate, LocalDate deadline, String conferenceCode, List<Reviewer> reviewers, List<Venue> venues, List<Paper> papers) {
         this.conferenceId = conferenceId;
         this.name = name;
         this.startDate = startDate;

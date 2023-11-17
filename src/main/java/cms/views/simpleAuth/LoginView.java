@@ -184,6 +184,10 @@ public class LoginView extends VerticalLayout {
                 .set("color", "hsl(236.29deg 47.78% 60.2%)")
                 .setCursor("pointer");
 
+        registerButton.addClickListener(e -> {
+            UI.getCurrent().navigate("register");
+        });
+
         return registerButton;
     }
 
