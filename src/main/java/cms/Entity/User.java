@@ -1,6 +1,7 @@
 package cms.Entity;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 
 public abstract class User implements Serializable {
     private int id;
@@ -59,5 +60,5 @@ public abstract class User implements Serializable {
         this.email = email;
     }
 
-    public abstract boolean login(String username, String password);
+    public abstract boolean login(String username, String password) throws SQLException;
 }

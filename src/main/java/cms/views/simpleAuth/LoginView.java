@@ -1,4 +1,4 @@
-package cms.views.auth;
+package cms.views.simpleAuth;
 
 import cms.DB.DBConnector;
 import cms.views.shardCom.Notify;
@@ -12,11 +12,14 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 import java.sql.SQLException;
 
 @Route("")
+@RouteAlias(value = "login")
 @PageTitle("Login")
 @AnonymousAllowed
 public class LoginView extends VerticalLayout {
@@ -145,7 +148,24 @@ public class LoginView extends VerticalLayout {
 
         loginButton.addClickListener(e -> {
             try {
-                handleLogin(username, password);
+                boolean login = handleLogin(username, password);
+
+               if(login) {
+                   // Save the username in the session
+                   VaadinSession.getCurrent().setAttribute("username", username.getValue());
+
+
+                   // Get the user role
+                   String role = new DBConnector().getUserRole(username.getValue());
+
+                   // Redirect to the correct view based on the user role
+                   switch (role) {
+                       case "Organizer" -> getUI().ifPresent(ui -> ui.getPage().executeJs("setTimeout(function() { window.location.href = 'organizer'; }, 500)"));
+                       case "reviewer" -> getUI().ifPresent(ui -> ui.getPage().executeJs("setTimeout(function() { window.location.href = 'reviewer'; }, 500)"));
+                       case "author" -> getUI().ifPresent(ui -> ui.getPage().executeJs("setTimeout(function() { window.location.href = 'author'; }, 500)"));
+                       default -> UI.getCurrent().navigate("");
+                   }
+               }
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
@@ -164,27 +184,21 @@ public class LoginView extends VerticalLayout {
                 .set("color", "hsl(236.29deg 47.78% 60.2%)")
                 .setCursor("pointer");
 
-        // Add click listener to navigate to the registration page
-        registerButton.addClickListener(e -> navigateToRegistration());
-
         return registerButton;
     }
 
-    // Method to handle navigation to the registration page
-    private void navigateToRegistration() {
-        // Redirect to the registration page
-        UI.getCurrent().navigate("register");
-    }
 
-    private void handleLogin(TextField username, PasswordField password) throws SQLException {
+    private boolean handleLogin(TextField username, PasswordField password) throws SQLException {
        DBConnector dbConnector = new DBConnector();
         if (username.isEmpty() || password.isEmpty()) {
             Notify.notify("Please fill all the fields", 3000, "warning");
+            return false;
         }
         else {
             try {
                 if (dbConnector.login(username.getValue(), password.getValue())) {
                     Notify.notify("Login successful", 3000, "success");
+                    return true;
                 }
                 else {
                     Notify.notify("Invalid username or password", 3000, "error");
@@ -193,6 +207,6 @@ public class LoginView extends VerticalLayout {
                 e.printStackTrace();
             }
         }
-
+        return false;
     }
 }

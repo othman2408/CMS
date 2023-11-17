@@ -1,5 +1,9 @@
 package cms.Entity;
 
+import cms.DB.DBConnector;
+
+import java.sql.SQLException;
+
 public class Organizer extends User{
     public Organizer() {
     }
@@ -9,7 +13,8 @@ public class Organizer extends User{
     }
 
     @Override
-    public boolean login(String username, String password) {
-        return false;
+    public boolean login(String username, String password) throws SQLException {
+        DBConnector dbConnector = new DBConnector();
+        return dbConnector.login(username, password);
     }
 }

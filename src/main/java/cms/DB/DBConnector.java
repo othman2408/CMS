@@ -1,15 +1,14 @@
 package cms.DB;
 
-import cms.Entity.Organizer;
 import cms.Entity.User;
 
 import java.sql.*;
-import java.util.List;
 
 public class DBConnector {
      public String dburl = null;
      public String user = null;
      public String pass = null;
+
 
 
     Statement stmt;
@@ -87,15 +86,39 @@ public class DBConnector {
         return false;
     }
 
-    public static void main(String[] args) {
-        User u1 = new Organizer("dsds", "123", "Othman alibrahim", "dsd");
+    public String getUserRole(String username) throws SQLException {
+        // Ensure the statement is initialized before using it
+        if (stmt != null) {
+            try {
+                // Use PreparedStatement to avoid SQL injection
+                String sql = "SELECT ROLE FROM USERS WHERE USERNAME = ?";
+                java.sql.PreparedStatement preparedStatement = conn.prepareStatement(sql);
 
-        try {
-            DBConnector db = new DBConnector();
-            db.registerUser(u1);
-        } catch (SQLException throwables) {
-            System.out.println("Error: " + throwables.getMessage());
+                // Set parameters
+                preparedStatement.setString(1, username);
+
+                // Execute the query
+                rs = preparedStatement.executeQuery();
+
+                // Check if the result set is empty
+                if (rs.next()) {
+                    return rs.getString("ROLE");
+                } else {
+                    return null;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw e; // Re-throw the exception for handling in the calling code
+            }
         }
+        return null;
+    }
+
+
+    public static void main(String[] args) throws SQLException {
+        DBConnector dbConnector = new DBConnector();
+
+        System.out.println(dbConnector.getUserRole("othman"));
     }
 
 }

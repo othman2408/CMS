@@ -1,4 +1,4 @@
-package cms.views.auth;
+package cms.views.simpleAuth;
 
 import cms.DB.DBConnector;
 import cms.Entity.Author;
@@ -6,6 +6,7 @@ import cms.Entity.Organizer;
 import cms.Entity.Reviewer;
 import cms.Entity.User;
 import cms.views.shardCom.Notify;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -135,8 +136,9 @@ public class RegisterView extends VerticalLayout {
                 Select<String> role = createRoleSelect();
 
                 Button registerButton = createRegisterButton(username, password, name, email, role);
+                Button login = createLoginButton();
 
-                fieldsContainer.add(name, username, password, email, role, registerButton);
+                fieldsContainer.add(name, username, password, email, role, registerButton, login);
                 return fieldsContainer;
         }
 
@@ -152,7 +154,7 @@ public class RegisterView extends VerticalLayout {
                                 .set("justify-content", "center")
                                 .set("align-items", "center")
                                 .set("width", "85%")
-                                .set("padding", "2rem 0");
+                                .set("padding", ".5rem 0px 0px 0px");
         }
 
         /**
@@ -259,6 +261,26 @@ public class RegisterView extends VerticalLayout {
                 registerButton.addClickListener(e -> handleRegistration(username, password, name, email, role));
 
                 return registerButton;
+        }
+
+        /**
+         * Creates the login button and sets its click listener.
+         *
+         * @return The created Register button.
+         */
+        private Button createLoginButton() {
+                Button loginBtn = new Button("Login");
+                loginBtn.getStyle()
+                        .set("margin-bottom", "15px")
+                        .set("padding", "10px")
+                        .set("border-radius", "4px")
+                        .set("width", "100%")
+                        .set("background-color", "transparent")
+                        .setCursor("pointer");
+
+                loginBtn.addClickListener(e -> UI.getCurrent().navigate(""));
+
+                return loginBtn;
         }
 
         /**
