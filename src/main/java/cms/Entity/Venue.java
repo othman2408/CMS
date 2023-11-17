@@ -10,11 +10,17 @@ public class Venue {
     public Venue() {
     }
 
+    public Venue(int venueId, String location) {
+        this.venueId = venueId;
+        this.location = location;
+    }
+
     public Venue(int venueId, String location, List<Conference> hostedConferences) {
         this.venueId = venueId;
         this.location = location;
         this.hostedConferences = hostedConferences;
     }
+
 
     public int getVenueId() {
         return venueId;

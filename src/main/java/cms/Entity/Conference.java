@@ -1,11 +1,13 @@
 package cms.Entity;
 
+import cms.DB.DBConnector;
+
 import java.awt.print.Paper;
-import java.io.Serializable;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-public class Conference implements Serializable {
+public class Conference {
     private int conferenceId;
     private String name;
     private LocalDate startDate;
@@ -17,6 +19,8 @@ public class Conference implements Serializable {
     private List<Venue> venues;
     private List<Paper> papers;
     private Organizer organizerId;
+
+    private DBConnector dbConnector;
 
     public Conference() {
     }
@@ -89,8 +93,9 @@ public class Conference implements Serializable {
         this.reviewers = reviewers;
     }
 
-    public List<Venue> getVenues() {
-        return venues;
+    public List<Venue> getVenues() throws SQLException {
+        dbConnector = new DBConnector();
+        return dbConnector.getVenues();
     }
 
     public void setVenues(List<Venue> venues) {

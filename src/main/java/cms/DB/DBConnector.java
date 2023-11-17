@@ -2,6 +2,7 @@ package cms.DB;
 
 import cms.Entity.Reviewer;
 import cms.Entity.User;
+import cms.Entity.Venue;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,6 +12,8 @@ public class DBConnector {
      public String dburl = null;
      public String user = null;
      public String pass = null;
+
+
 
 
 
@@ -89,6 +92,43 @@ public class DBConnector {
         return false;
     }
 
+    public User getUser(String username) throws SQLException {
+// Ensure the statement is initialized before using it
+        if (stmt != null) {
+            try {
+                // Use PreparedStatement to avoid SQL injection
+                String sql = "SELECT * FROM USERS WHERE USERNAME = ?";
+                java.sql.PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+                String role = getUserRole(username);
+
+                // Set parameters
+                preparedStatement.setString(1, username);
+
+                // Execute the query
+                rs = preparedStatement.executeQuery();
+
+                // Check if the result set is empty
+                if (rs.next()) {
+                    switch (role) {
+                        case "Organizer":
+                            return new cms.Entity.Organizer(rs.getString("USERNAME"), rs.getString("PASSWORD"), rs.getString("NAME"), rs.getString("EMAIL"));
+                        case "Reviewer":
+                            return new Reviewer(rs.getString("USERNAME"), rs.getString("PASSWORD"), rs.getString("NAME"), rs.getString("EMAIL"));
+                        case "Author":
+                            return new cms.Entity.Author(rs.getString("USERNAME"), rs.getString("PASSWORD"), rs.getString("NAME"), rs.getString("EMAIL"));
+                    }
+                } else {
+                    return null;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw e; // Re-throw the exception for handling in the calling code
+            }
+        }
+        return null;
+    }
+
     public String getUserRole(String username) throws SQLException {
         // Ensure the statement is initialized before using it
         if (stmt != null) {
@@ -136,14 +176,31 @@ public class DBConnector {
         return reviewers;
     }
 
+    public List<Venue> getVenues() {
+        List<Venue> venues = new ArrayList<>();
+
+        String sql = "SELECT * FROM Venue";
+
+        if(stmt != null) {
+            try {
+                rs = stmt.executeQuery(sql);
+                while(rs.next()) {
+                    venues.add(new Venue(rs.getInt("VENUE_ID"), rs.getString("LOCATION")));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return venues;
+    }
+
 
 
     public static void main(String[] args) throws SQLException {
         DBConnector dbConnector = new DBConnector();
 
-        for(Reviewer reviewer : dbConnector.getReviewers()) {
-            System.out.println(reviewer);
-        }
+        System.out.println(dbConnector.getUser("othman").getName());
     }
 
 }
