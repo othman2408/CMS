@@ -1,14 +1,12 @@
 package cms.views.organizer;
 
-import cms.Entity.CMS;
-import cms.Entity.Reviewer;
-import cms.Entity.User;
-import cms.Entity.Venue;
+import cms.Entity.*;
 import cms.views.shardCom.Notify;
 import com.flowingcode.vaadin.addons.verticalmenu.VerticalMenu;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
@@ -20,7 +18,10 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.server.VaadinSession;
 
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class organizerDashboard extends VerticalMenu {
     public static String loggedInUser = VaadinSession.getCurrent().getAttribute("username").toString();
@@ -35,6 +36,7 @@ public class organizerDashboard extends VerticalMenu {
         }
     }
 
+
     public organizerDashboard() throws SQLException {
         super(new Section(new H1("Account"), userCard(dbConnector.getUser(loggedInUser))),
                 new Section(new H1("Register Conferences"), createConferences()),
@@ -43,9 +45,10 @@ public class organizerDashboard extends VerticalMenu {
                 new Section(new H1("Venues")));
 
         reloadSections();
-//        addMenuSelectedListener(ev->{
-//            Notification.show("Section: " + ev.getSource().getElement().getChild(0).getText() + " clicked.");
-//        });
+        // addMenuSelectedListener(ev->{
+        // Notification.show("Section: " +
+        // ev.getSource().getElement().getChild(0).getText() + " clicked.");
+        // });
 
         // Change colors
         getSections().get(0).getStyle().set("background-image", "linear-gradient(60deg, #29323c 0%, #485563 100%)");
@@ -54,9 +57,7 @@ public class organizerDashboard extends VerticalMenu {
         getSections().get(3).getStyle().set("background-image", "linear-gradient(135deg, #5ee7df 0%, #b490ca 100%)");
         getSections().get(4).getStyle().set("background-image", "linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)");
 
-
     }
-
 
     private static VerticalLayout createConferences() throws SQLException {
         VerticalLayout container = new VerticalLayout();
@@ -67,8 +68,7 @@ public class organizerDashboard extends VerticalMenu {
         title.getStyle().set("text-align", "center")
                 .set("margin", "auto");
 
-
-        TextField name = createTextField("Name", "Enter conference name", true);
+        TextField name = createTextField();
         DatePicker startDate = new DatePicker("Start Date");
         startDate.setWidth("100%");
         startDate.setRequired(true);
@@ -81,7 +81,20 @@ public class organizerDashboard extends VerticalMenu {
         deadline.setWidth("100%");
         deadline.setRequired(true);
         deadline.setPlaceholder("Select a deadline date");
-        Select<String> reviewerSelect = createReviewerSelect(cms.getReviewers());
+
+        Div reviewerDiv = new Div();
+        reviewerDiv.getStyle()
+                .set("display", "flex")
+                .set("align-items", "baseline")
+                .set("gap", "10px")
+                .set("margin-bottom", "15px")
+                .set("width", "100%");
+
+        MultiSelectComboBox<String> reviewerSelect = createReviewerSelect(cms.getReviewers() );
+        RegisterDialog registerDialog = new RegisterDialog("Add new", "Add");
+        registerDialog.addClassName("reviewer-dialog");
+        reviewerDiv.add(reviewerSelect, registerDialog);
+
         Select<String> venueSelect = createVenueSelect(dbConnector.getVenues());
 
         Button Create = new Button("Register");
@@ -90,25 +103,56 @@ public class organizerDashboard extends VerticalMenu {
                 .set("width", "auto")
                 .set("padding", "0 3rem")
                 .set("margin", "auto")
-                .set("background-image", "linear-gradient(to top, rgb(6 185 106 / 35%) 0%, rgb(60 186 146 / 68%) 100%)  ")
+                .set("background-image",
+                        "linear-gradient(to top, rgb(6 185 106 / 35%) 0%, rgb(60 186 146 / 68%) 100%)  ")
                 .set("color", "white")
                 .set("font-weight", "bold")
                 .set("font-size", "16px")
                 .set("cursor", "pointer");
 
         Create.addClickListener(e -> {
-            Notification.show("Conference created");
+            int organizerId;
+            int venueId;
+            try {
+                organizerId = dbConnector.getUser(loggedInUser).getId();
+                venueId = dbConnector.getVenue(venueSelect.getValue()).getVenueId();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            Notification.show(organizerId + " " + venueId);
+            handleConferenceRegister(Create, name, startDate, endDate, deadline, organizerId, venueId);
         });
 
-
-        container.add(title, name, startDate, endDate, deadline, reviewerSelect, venueSelect, Create );
+        container.add(title, name, startDate, endDate, deadline, reviewerDiv, venueSelect, Create);
         return container;
     }
 
-    private static com.vaadin.flow.component.textfield.TextField createTextField(String label, String placeholder, boolean required) {
-        com.vaadin.flow.component.textfield.TextField textField = new com.vaadin.flow.component.textfield.TextField(label);
-        textField.setPlaceholder(placeholder);
-        textField.setRequired(required);
+    private static void handleConferenceRegister(Button create, TextField name, DatePicker startDate, DatePicker endDate, DatePicker deadline, int organizerID, int venueID) {
+        if (name.getValue().isEmpty() || startDate.getValue() == null || endDate.getValue() == null || deadline.getValue() == null) {
+            Notify.notify("Please fill all the fields", 3000, "warning");
+            return;
+        }
+
+        Conference conference = new Conference(name.getValue(), startDate.getValue(), endDate.getValue(), deadline.getValue(), organizerID, venueID);
+
+        if (dbConnector.checkForConference(conference.getName())) {
+            Notify.notify("Conference already exists", 3000, "warning");
+            return;
+        }
+
+        boolean register = dbConnector.registerConference(conference);
+
+        if (register) {
+            Notify.notify("Conference registered successfully", 3000, "success");
+        } else {
+            Notify.notify("Conference registration failed", 3000, "error");
+        }
+    }
+
+    private static TextField createTextField() {
+        com.vaadin.flow.component.textfield.TextField textField = new TextField("Name");
+        textField.setPlaceholder("Enter conference name");
+        textField.setRequired(true);
         textField.getStyle()
                 .set("margin-bottom", "15px")
                 .set("border-radius", "4px")
@@ -116,24 +160,33 @@ public class organizerDashboard extends VerticalMenu {
         return textField;
     }
 
-    private static Select<String> createReviewerSelect(List<Reviewer> reviewers) {
-        Select<String> reviewerSelect = new Select<>();
+    private static MultiSelectComboBox<String> createReviewerSelect(List<Reviewer> reviewers) {
+        MultiSelectComboBox<String> reviewerSelect = new MultiSelectComboBox<>();
         reviewerSelect.setWidth("100%");
 
-        reviewerSelect.setLabel("Reviewer");
-        reviewerSelect.setPlaceholder("Select a reviewer");
+        reviewerSelect.setLabel("Select Reviewers or Add New Ones");
+        reviewerSelect.setPlaceholder("Select reviewers");
 
-        String reviewerNames = "";
-        for (Reviewer reviewer : reviewers) {
-            reviewerNames += reviewer.getUsername() + ", ";
-        }
+        Set<String> reviewerNames = reviewers.stream().map(Reviewer::getUsername).collect(Collectors.toSet());
 
-        reviewerSelect.setItems(reviewerNames.split(", "));
+        reviewerSelect.setItems(reviewerNames);
+
+        // Listener to limit selections to 3
+        reviewerSelect.addValueChangeListener(event -> {
+            if (event.getValue().size() > 3) {
+                Set<String> selectedItems = new HashSet<>(event.getValue());
+                selectedItems.removeAll(event.getOldValue());
+                reviewerSelect.deselect(selectedItems);
+                Notify.notify("You can only select 3 reviewers only", 3000, "warning");
+            }
+        });
 
         return reviewerSelect;
     }
 
-    private static Select<String> createVenueSelect(List<Venue> venues) throws SQLException{
+
+
+    private static Select<String> createVenueSelect(List<Venue> venues) throws SQLException {
         Select<String> venueSelect = new Select<>();
         venueSelect.setWidth("100%");
 
@@ -150,7 +203,7 @@ public class organizerDashboard extends VerticalMenu {
         return venueSelect;
     }
 
-    private static Div userCard(User user){
+    private static Div userCard(User user) {
         Div card = new Div();
         card.getStyle()
                 .set("background-image", "linear-gradient(to top, rgb(122 183 233 / 74%) 0%, rgb(160 185 157) 100%)")
@@ -159,7 +212,7 @@ public class organizerDashboard extends VerticalMenu {
                 .set("width", "90%")
                 .set("max-width", "360px")
                 .set("margin", "5rem auto")
-                .set("font-family", "ubuntu")
+                .set("font-family", "Open Sans, sans-serif !important")
                 .set("box-shadow", "0 4px 8px 0 rgba(0, 0, 0, 0.1)");
 
         Div firstRow = new Div();
@@ -215,7 +268,8 @@ public class organizerDashboard extends VerticalMenu {
                 .set("align-items", "center")
                 .set("justify-content", "center")
                 .set("flex-direction", "column")
-                .set("gap", "6px");
+                .set("gap", "6px")
+                .set("font-family", "Open Sans, sans-serif !important");
 
         Button edit = new Button("Edit");
         edit.getStyle().set("margin-top", "20px")

@@ -1,1 +1,14 @@
 @import url('./main-layout.css');
+
+
+.reviewer-dialog {
+    position: relative;
+}
+.reviewer-dialog::before {
+    content: "Add Reviewer";
+    position: absolute;
+    top: -20px;
+    left: 0;
+    color: #354653;
+    font-size: 14px;
+}

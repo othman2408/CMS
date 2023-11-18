@@ -13,6 +13,14 @@ public abstract class User implements Serializable {
     public User() {
     }
 
+    public User(int id, String username, String password, String name, String email) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.email = email;
+    }
+
     public User(String username, String password, String name, String email) {
         this.username = username;
         this.password = password;

@@ -18,14 +18,25 @@ public class Conference {
     private List<Reviewer> reviewers;
     private List<Venue> venues;
     private List<Paper> papers;
-    private Organizer organizerId;
+    private int  organizerId;
+    private int venueId;
 
     private DBConnector dbConnector;
 
     public Conference() {
     }
 
-    public Conference( String name, LocalDate startDate, LocalDate endDate, LocalDate deadline, String conferenceCode, List<Reviewer> reviewers, List<Venue> venues, List<Paper> papers, Organizer organizerId) {
+    public Conference(String name, LocalDate startDate, LocalDate endDate, LocalDate deadline, int organizerId, int venueId) {
+        this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.deadline = deadline;
+        this.organizerId = organizerId;
+        this.venueId = venueId;
+    }
+
+    public Conference(int conferenceId, String name, LocalDate startDate, LocalDate endDate, LocalDate deadline, String conferenceCode, List<Reviewer> reviewers, List<Venue> venues, List<Paper> papers, int organizerId, int venueId) {
+        this.conferenceId = conferenceId;
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -35,6 +46,7 @@ public class Conference {
         this.venues = venues;
         this.papers = papers;
         this.organizerId = organizerId;
+        this.venueId = venueId;
     }
 
     public int getConferenceId() {
@@ -110,12 +122,20 @@ public class Conference {
         this.papers = papers;
     }
 
-    public Organizer getOrganizerId() {
+    public int getOrganizerId() {
         return organizerId;
     }
 
-    public void setOrganizerId(Organizer organizerId) {
+    public void setOrganizerId(int organizerId) {
         this.organizerId = organizerId;
+    }
+
+    public int getVenueId() {
+        return venueId;
+    }
+
+    public void setVenueId(int venueId) {
+        this.venueId = venueId;
     }
 
     @Override
