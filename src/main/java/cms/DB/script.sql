@@ -144,6 +144,14 @@ INSERT INTO Paper_Keyword (paper_id, keyword_id) VALUES (4, 4);
 INSERT INTO Paper_Keyword (paper_id, keyword_id) VALUES (5, 5);
 
 
+-- Create a view for the Conference table, belong to specific organizer
+CREATE VIEW Conference_View AS
+SELECT c.conference_id, c.name, c.start_date, c.end_date, c.deadline, c.conference_code, u.username AS organizer, v.location AS venue
+FROM Conference c
+         INNER JOIN Users u ON c.organizer_id = u.user_id
+         INNER JOIN Venue v ON c.venue_id = v.venue_id;
+
+
 -- Drop the tables
 DROP TABLE Paper_Keyword;
 DROP TABLE Paper;
