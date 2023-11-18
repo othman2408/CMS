@@ -12,8 +12,6 @@ public class DBConnector {
      public String pass = null;
 
 
-
-
     Statement stmt;
     Connection conn;
     ResultSet rs;
@@ -201,10 +199,10 @@ public class DBConnector {
         return reviewers;
     }
 
-    public List<Venue> getVenues() {
+    public List<Venue> getAvailableVenues() {
         List<Venue> venues = new ArrayList<>();
 
-        String sql = "SELECT * FROM Venue";
+        String sql = "SELECT * FROM Venue WHERE venue_id NOT IN (SELECT venue_id FROM Conference)";
 
         if(stmt != null) {
             try {
@@ -329,12 +327,38 @@ public class DBConnector {
         }
     }
 
+    public List<Conference> getOrganizerConferences(String user) {
+        List<Conference> conferences = new ArrayList<>();
+
+        String sql = "SELECT * FROM Conference_View WHERE ORGANIZER = ?";
+
+        if(stmt != null) {
+            try {
+                java.sql.PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+                preparedStatement.setString(1, user);
+
+                rs = preparedStatement.executeQuery();
+
+                while(rs.next()) {
+                    conferences.add(new Conference(rs.getInt("CONFERENCE_ID"), rs.getString("NAME"), rs.getDate("START_DATE").toLocalDate(), rs.getDate("END_DATE").toLocalDate(), rs.getDate("DEADLINE").toLocalDate(), rs.getString("CONFERENCE_CODE"), rs.getString("ORGANIZER"), rs.getString("VENUE")));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return conferences;
+    }
+
 
 
     public static void main(String[] args) throws SQLException {
         DBConnector dbConnector = new DBConnector();
 
-        System.out.println(dbConnector.getUser("rev1").getId());
+        for(Conference c : dbConnector.getOrganizerConferences("othman")) {
+            System.out.println(c.getName());
+        }
 
 
     }

@@ -8,10 +8,10 @@ import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
@@ -38,9 +38,9 @@ public class organizerDashboard extends VerticalMenu {
 
 
     public organizerDashboard() throws SQLException {
-        super(new Section(new H1("Account"), userCard(dbConnector.getUser(loggedInUser))),
+        super(new Section(new H1("My Account"), userCard(dbConnector.getUser(loggedInUser))),
                 new Section(new H1("Register Conferences"), createConferences()),
-                new Section(new H1("Papers")),
+                new Section(new H1("My Conferences"), organizerConferences(loggedInUser)),
                 new Section(new H1("Reviewers")),
                 new Section(new H1("Venues")));
 
@@ -95,7 +95,7 @@ public class organizerDashboard extends VerticalMenu {
         registerDialog.addClassName("reviewer-dialog");
         reviewerDiv.add(reviewerSelect, registerDialog);
 
-        Select<String> venueSelect = createVenueSelect(dbConnector.getVenues());
+        Select<String> venueSelect = createVenueSelect(dbConnector.getAvailableVenues());
 
         Button Create = new Button("Register");
         Create.getStyle().set("margin-top", "15px")
@@ -119,17 +119,22 @@ public class organizerDashboard extends VerticalMenu {
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
-            Notification.show(organizerId + " " + venueId);
-            handleConferenceRegister(Create, name, startDate, endDate, deadline, organizerId, venueId);
+            handleConferenceRegister(Create, name, startDate, endDate, deadline, reviewerSelect, venueSelect, organizerId, venueId);
         });
 
         container.add(title, name, startDate, endDate, deadline, reviewerDiv, venueSelect, Create);
         return container;
     }
 
-    private static void handleConferenceRegister(Button create, TextField name, DatePicker startDate, DatePicker endDate, DatePicker deadline, int organizerID, int venueID) {
+    private static void handleConferenceRegister(Button create, TextField name, DatePicker startDate, DatePicker endDate, DatePicker deadline, MultiSelectComboBox<String> reviewerSelect, Select<String> venueSelect, int organizerID, int venueID) {
         if (name.getValue().isEmpty() || startDate.getValue() == null || endDate.getValue() == null || deadline.getValue() == null) {
             Notify.notify("Please fill all the fields", 3000, "warning");
+            return;
+        }
+
+        // Validate dates
+        if (startDate.getValue().isAfter(endDate.getValue()) || startDate.getValue().isAfter(deadline.getValue()) || endDate.getValue().isAfter(deadline.getValue())) {
+            Notify.notify("Please enter valid dates", 3000, "warning");
             return;
         }
 
@@ -144,6 +149,13 @@ public class organizerDashboard extends VerticalMenu {
 
         if (register) {
             Notify.notify("Conference registered successfully", 3000, "success");
+            // Clear fields
+            name.clear();
+            startDate.clear();
+            endDate.clear();
+            deadline.clear();
+            reviewerSelect.clear();
+            venueSelect.clear();
         } else {
             Notify.notify("Conference registration failed", 3000, "error");
         }
@@ -213,7 +225,7 @@ public class organizerDashboard extends VerticalMenu {
                 .set("max-width", "360px")
                 .set("margin", "5rem auto")
                 .set("font-family", "Open Sans, sans-serif !important")
-                .set("box-shadow", "0 4px 8px 0 rgba(0, 0, 0, 0.1)");
+                .set("box-shadow", "rgb(0 0 0 / 7%) 0px 4px 20px 20px");
 
         Div firstRow = new Div();
         firstRow.getStyle()
@@ -300,6 +312,46 @@ public class organizerDashboard extends VerticalMenu {
         card.add(firstRow, secondRow, thirdRow);
 
         return card;
+    }
+
+    private static VerticalLayout organizerConferences(String organizerUser) throws SQLException {
+
+        VerticalLayout container = new VerticalLayout();
+        container.getStyle()
+                .set("margin", "auto")
+                .set("margin-top", "5rem")
+                .set("width", "90%");
+
+        H2 title = new H2("My Conferences List ");
+        title.getStyle().set("text-align", "center")
+                .set("margin", "auto");
+
+        Grid<Conference> grid = new Grid<>(Conference.class, false);
+        grid.getStyle()
+                .set("margin", "auto")
+                .set("margin-top", "3rem")
+                .set("width", "90%")
+                .set("background-image", "linear-gradient(to top, rgb(122 183 233 / 74%) 0%, rgb(160 185 157) 100%)");
+
+        // Set the Height of the grid to be dynamic
+        grid.setAllRowsVisible(true);
+
+        List<Conference> conferences = dbConnector.getOrganizerConferences(organizerUser);
+
+        // Add columns to the grid
+        grid.addColumn(Conference::getName).setHeader("Name");
+        grid.addColumn(Conference::getStartDate).setHeader("Start Date");
+        grid.addColumn(Conference::getEndDate).setHeader("End Date");
+        grid.addColumn(Conference::getDeadline).setHeader("Deadline");
+        grid.addColumn(Conference::getConferenceCode).setHeader("Code");
+        grid.addColumn(Conference::getOrganizerName).setHeader("Organizer");
+        grid.addColumn(Conference::getVenueName).setHeader("Location");
+
+        grid.setItems(conferences);
+
+        container.add(title, grid);
+
+        return container;
     }
 
     private static void handleEdit(Button edit) {

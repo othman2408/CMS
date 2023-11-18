@@ -3,7 +3,6 @@ package cms.Entity;
 import cms.DB.DBConnector;
 
 import java.awt.print.Paper;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,8 +17,13 @@ public class Conference {
     private List<Reviewer> reviewers;
     private List<Venue> venues;
     private List<Paper> papers;
+
     private int  organizerId;
+
+    private String organizerName;
     private int venueId;
+
+    private String venueName;
 
     private DBConnector dbConnector;
 
@@ -35,6 +39,17 @@ public class Conference {
         this.venueId = venueId;
     }
 
+    public Conference(int conferenceId, String name, LocalDate startDate, LocalDate endDate, LocalDate deadline, String conferenceCode, String organizerName, String venueName) {
+        this.conferenceId = conferenceId;
+        this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.deadline = deadline;
+        this.conferenceCode = conferenceCode;
+        this.organizerName = organizerName;
+        this.venueName = venueName;
+    }
+
     public Conference(int conferenceId, String name, LocalDate startDate, LocalDate endDate, LocalDate deadline, String conferenceCode, List<Reviewer> reviewers, List<Venue> venues, List<Paper> papers, int organizerId, int venueId) {
         this.conferenceId = conferenceId;
         this.name = name;
@@ -48,6 +63,7 @@ public class Conference {
         this.organizerId = organizerId;
         this.venueId = venueId;
     }
+
 
     public int getConferenceId() {
         return conferenceId;
@@ -105,9 +121,8 @@ public class Conference {
         this.reviewers = reviewers;
     }
 
-    public List<Venue> getVenues() throws SQLException {
-        dbConnector = new DBConnector();
-        return dbConnector.getVenues();
+    public List<Venue> getVenues() {
+        return venues;
     }
 
     public void setVenues(List<Venue> venues) {
@@ -130,12 +145,36 @@ public class Conference {
         this.organizerId = organizerId;
     }
 
+    public String getOrganizerName() {
+        return organizerName;
+    }
+
+    public void setOrganizerName(String organizerName) {
+        this.organizerName = organizerName;
+    }
+
     public int getVenueId() {
         return venueId;
     }
 
     public void setVenueId(int venueId) {
         this.venueId = venueId;
+    }
+
+    public String getVenueName() {
+        return venueName;
+    }
+
+    public void setVenueName(String venueName) {
+        this.venueName = venueName;
+    }
+
+    public DBConnector getDbConnector() {
+        return dbConnector;
+    }
+
+    public void setDbConnector(DBConnector dbConnector) {
+        this.dbConnector = dbConnector;
     }
 
     @Override
