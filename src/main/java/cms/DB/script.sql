@@ -151,6 +151,14 @@ FROM Conference c
          INNER JOIN Users u ON c.organizer_id = u.user_id
          INNER JOIN Venue v ON c.venue_id = v.venue_id;
 
+-- get the available venues
+SELECT * FROM Venue WHERE venue_id NOT IN (SELECT venue_id FROM Conference);
+
+-- Create view for the available venues
+CREATE VIEW Available_Venues AS
+SELECT * FROM Venue WHERE venue_id NOT IN (SELECT venue_id FROM Conference);
+
+
 
 -- Drop the tables
 DROP TABLE Paper_Keyword;
