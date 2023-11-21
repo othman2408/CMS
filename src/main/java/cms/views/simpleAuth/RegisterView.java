@@ -1,10 +1,10 @@
 package cms.views.simpleAuth;
 
 import cms.DB.DBConnector;
-import cms.Entity.Author;
-import cms.Entity.Organizer;
-import cms.Entity.Reviewer;
-import cms.Entity.User;
+import cms.Entities.Author;
+import cms.Entities.Organizer;
+import cms.Entities.Reviewer;
+import cms.Entities.User;
 import cms.views.shardCom.Notify;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;

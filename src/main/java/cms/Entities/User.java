@@ -1,4 +1,4 @@
-package cms.Entity;
+package cms.Entities;
 
 import java.io.Serializable;
 import java.sql.SQLException;

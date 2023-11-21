@@ -1,6 +1,6 @@
 package cms.DB;
 
-import cms.Entity.*;
+import cms.Entities.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

@@ -1,7 +1,7 @@
 package cms.views.organizer;
 
 import cms.DB.DBConnector;
-import cms.Entity.Reviewer;
+import cms.Entities.Reviewer;
 import cms.views.shardCom.Notify;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;

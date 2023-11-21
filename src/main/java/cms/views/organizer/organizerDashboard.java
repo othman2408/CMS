@@ -1,6 +1,6 @@
 package cms.views.organizer;
 
-import cms.Entity.*;
+import cms.Entities.*;
 import cms.views.shardCom.Notify;
 import com.flowingcode.vaadin.addons.verticalmenu.VerticalMenu;
 import com.vaadin.flow.component.UI;

@@ -1,4 +1,4 @@
-package cms.Entity;
+package cms.Entities;
 
 public class Reviewer extends User{
 

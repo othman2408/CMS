@@ -1,6 +1,6 @@
 package cms.DB;
 
-import cms.Entity.*;
+import cms.Entities.*;
 
 import java.sql.*;
 import java.util.ArrayList;
