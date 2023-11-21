@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
 
 public class organizerDashboard extends VerticalMenu {
     public static String loggedInUser = VaadinSession.getCurrent().getAttribute("username").toString();
-    private static CMS cms = new CMS();
-    private static cms.DB.DBConnector dbConnector;
+    private static final CMS cms = new CMS();
+    private static final cms.DB.DBConnector dbConnector;
 
     static {
         try {
@@ -38,25 +38,44 @@ public class organizerDashboard extends VerticalMenu {
 
 
     public organizerDashboard() throws SQLException {
-        super(new Section(new H1("My Account"), userCard(dbConnector.getUser(loggedInUser))),
-                new Section(new H1("Register Conferences"), createConferences()),
-                new Section(new H1("My Conferences"), organizerConferences(loggedInUser)),
-                new Section(new H1("Reviewers")),
-                new Section(new H1("Venues")));
+        super(
+                createAccountSection(),
+                createConferencesSection(),
+                createMyConferencesSection(),
+                createReviewersSection(),
+                createVenuesSection()
+        );
 
-        reloadSections();
-        // addMenuSelectedListener(ev->{
-        // Notification.show("Section: " +
-        // ev.getSource().getElement().getChild(0).getText() + " clicked.");
-        // });
+        // Set the Colors of the menu
+        customizeSections();
+    }
 
-        // Change colors
-        getSections().get(0).getStyle().set("background-image", "linear-gradient(60deg, #29323c 0%, #485563 100%)");
-        getSections().get(1).getStyle().set("background-image", "linear-gradient(-20deg, #616161 0%, #9bc5c3 100%)");
-        getSections().get(2).getStyle().set("background-image", "linear-gradient(to top, #e6b980 0%, #eacda3 100%)");
-        getSections().get(3).getStyle().set("background-image", "linear-gradient(135deg, #5ee7df 0%, #b490ca 100%)");
-        getSections().get(4).getStyle().set("background-image", "linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)");
+    private static Section createAccountSection() throws SQLException {
+        return new Section(new H1("My Account"), userCard(dbConnector.getUser(loggedInUser)));
+    }
 
+    private static Section createConferencesSection() {
+        try {
+            return new Section(new H1("Register Conferences"), createConferences());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static Section createMyConferencesSection() {
+        try {
+            return new Section(new H1("My Conferences"), organizerConferences(loggedInUser));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static Section createReviewersSection() {
+        return new Section(new H1("Reviewers"));
+    }
+
+    private static Section createVenuesSection() {
+        return new Section(new H1("Venues"));
     }
 
     private static VerticalLayout createConferences() throws SQLException {
@@ -196,8 +215,6 @@ public class organizerDashboard extends VerticalMenu {
         return reviewerSelect;
     }
 
-
-
     private static Select<String> createVenueSelect(List<Venue> venues) throws SQLException {
         Select<String> venueSelect = new Select<>();
         venueSelect.setWidth("100%");
@@ -266,7 +283,7 @@ public class organizerDashboard extends VerticalMenu {
                 .set("border-bottom", "1px solid rgb(0 0 0 / 5%)")
                 .set("font-weight", "600");
 
-        Paragraph ID = new Paragraph("ID: " + String.valueOf(user.getId()));
+        Paragraph ID = new Paragraph("ID: " + user.getId());
 
         Paragraph name = new Paragraph("Name: " + user.getName());
 
@@ -354,6 +371,14 @@ public class organizerDashboard extends VerticalMenu {
         return container;
     }
 
+    private void customizeSections() {
+        getSections().get(0).getStyle().set("background-image", "linear-gradient(60deg, #29323c 0%, #485563 100%)");
+        getSections().get(1).getStyle().set("background-image", "linear-gradient(-20deg, #616161 0%, #9bc5c3 100%)");
+        getSections().get(2).getStyle().set("background-image", "linear-gradient(to top, #e6b980 0%, #eacda3 100%)");
+        getSections().get(3).getStyle().set("background-image", "linear-gradient(135deg, #5ee7df 0%, #b490ca 100%)");
+        getSections().get(4).getStyle().set("background-image", "linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)");
+    }
+
     private static void handleEdit(Button edit) {
         edit.addClickListener(e -> {
             Notify.notify("Not now", 3000, "warning");
@@ -362,8 +387,16 @@ public class organizerDashboard extends VerticalMenu {
 
     private static void handleLogout(Button logout) {
         logout.addClickListener(e -> {
-            VaadinSession.getCurrent().close();
-            UI.getCurrent().getPage().executeJs("window.location.href = 'login'");
+            // Check if there is a data in the session, if so, remove it. And redirect to login page
+            if (VaadinSession.getCurrent().getAttribute("username") != null) {
+                VaadinSession.getCurrent().setAttribute("username", null);
+                UI.getCurrent().getPage().setLocation("/login");
+                VaadinSession.getCurrent().close();
+
+                //Prevent going back to the dashboard
+                UI.getCurrent().getPage().getHistory().replaceState(null, "");
+            }
         });
     }
+
 }

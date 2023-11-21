@@ -132,10 +132,15 @@ public class RegisterView extends VerticalLayout {
                 Div fieldsContainer = new Div();
                 setFieldsContainerStyles(fieldsContainer);
 
-                TextField username = createTextField("Username", "Please enter your username", true);
-                PasswordField password = createPasswordField("Password", "Please enter your password", true);
-                TextField name = createTextField("Name", "Please enter your name", true);
-                EmailField email = createEmailField("Email", "Please enter your email", true);
+                TextField username = createTextField("Username", "Please enter your username");
+                // Validate username
+                username.setErrorMessage("Username must be at least 4 characters long");
+                username.setInvalid(false);
+                username.setMinLength(4);
+
+                PasswordField password = createPasswordField();
+                TextField name = createTextField("Name", "Please enter your name");
+                EmailField email = createEmailField();
                 Select<String> role = createRoleSelect();
 
                 Button registerButton = createRegisterButton(username, password, name, email, role);
@@ -162,16 +167,15 @@ public class RegisterView extends VerticalLayout {
 
         /**
          * Creates a TextField with the given label, placeholder, and required status.
-         * 
+         *
          * @param label       The label for the TextField.
          * @param placeholder The placeholder for the TextField.
-         * @param required    Whether the TextField is required or not.
          * @return The created TextField.
          */
-        private TextField createTextField(String label, String placeholder, boolean required) {
+        private TextField createTextField(String label, String placeholder) {
                 TextField textField = new TextField(label);
                 textField.setPlaceholder(placeholder);
-                textField.setRequired(required);
+                textField.setRequired(true);
                 textField.getStyle()
                                 .set("margin-bottom", "15px")
                                 .set("padding", "10px")
@@ -184,40 +188,46 @@ public class RegisterView extends VerticalLayout {
          * Creates a PasswordField with the given label, placeholder, and required
          * status.
          *
-         * @param label       The label for the PasswordField.
-         * @param placeholder The placeholder for the PasswordField.
-         * @param required    Whether the PasswordField is required or not.
          * @return The created PasswordField.
          */
-        private PasswordField createPasswordField(String label, String placeholder, boolean required) {
-                PasswordField passwordField = new PasswordField(label);
-                passwordField.setPlaceholder(placeholder);
-                passwordField.setRequired(required);
+        private PasswordField createPasswordField() {
+                PasswordField passwordField = new PasswordField("Password");
+                passwordField.setPlaceholder("Please enter your password");
+                passwordField.setRequired(true);
                 passwordField.getStyle()
                                 .set("margin-bottom", "15px")
                                 .set("padding", "10px")
                                 .set("border-radius", "4px")
                                 .set("width", "100%");
+
+                // Validate password
+                passwordField.setErrorMessage("Password must be at least 8 characters long");
+                passwordField.setInvalid(false);
+                passwordField.setMinLength(8);
+
                 return passwordField;
         }
 
         /**
          * Creates an EmailField with the given label, placeholder, and required status.
-         * 
-         * @param label       The label for the EmailField.
-         * @param placeholder The placeholder for the EmailField.
-         * @param required    Whether the EmailField is required or not.
+         *
          * @return The created EmailField.
          */
-        private EmailField createEmailField(String label, String placeholder, boolean required) {
-                EmailField emailField = new EmailField(label);
-                emailField.setPlaceholder(placeholder);
-                emailField.setRequired(required);
+        private EmailField createEmailField() {
+                EmailField emailField = new EmailField("Email");
+                emailField.setPlaceholder("Please enter your email");
+                emailField.setRequired(true);
                 emailField.getStyle()
                                 .set("margin-bottom", "15px")
                                 .set("padding", "10px")
                                 .set("border-radius", "4px")
                                 .set("width", "100%");
+
+                // Validate email
+                emailField.setErrorMessage("Please enter a valid email address");
+                emailField.setInvalid(false);
+                emailField.setPattern("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
+
                 return emailField;
         }
 
@@ -303,10 +313,16 @@ public class RegisterView extends VerticalLayout {
                         User user = switch (role.getValue()) {
                                 case "Organizer" -> new Organizer(username.getValue(), password.getValue(),
                                                 name.getValue(), email.getValue());
-                                case "Author" -> new Author(username.getValue(), password.getValue(), name.getValue(),
+                                case "Author" ->{
+                                        Notify.notify("Author view has not been implemented yet", 3000, "info");
+                                    yield new Author(username.getValue(), password.getValue(), name.getValue(),
                                                 email.getValue());
-                                case "Reviewer" -> new Reviewer(username.getValue(), password.getValue(),
-                                                name.getValue(), email.getValue());
+                                }
+                                case "Reviewer" -> {
+                                        Notify.notify("Review view has not been implemented yet", 3000, "info");
+                                    yield new Reviewer(username.getValue(), password.getValue(), name.getValue(),
+                                                email.getValue());
+                                }
                                 default -> throw new IllegalStateException("Unexpected value: " + role.getValue());
                         };
                         System.out.println(user.getName() + " "
@@ -316,15 +332,17 @@ public class RegisterView extends VerticalLayout {
                                         + user.getClass().getSimpleName());
 
                         try {
+                                // Register the user
                                 registerUser(user);
                                 Notify.notify("User registered successfully", 2000, "success");
 
+                                // Redirect to login page
                                 getUI().ifPresent(ui -> ui.getPage().executeJs(
                                                 "setTimeout(function() { window.location.href = ''; }, 2000)"));
 
-                        } catch (SQLException throwables) {
-                                throwables.printStackTrace();
-                                Notify.notify("Error: " + throwables.getMessage(), 3000, "error");
+                        } catch (SQLException throwable) {
+                                throwable.printStackTrace();
+                                Notify.notify("Error: " + throwable.getMessage(), 3000, "error");
                         }
                 }
         }

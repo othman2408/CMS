@@ -1,7 +1,8 @@
 package cms.views.organizer;
 
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
@@ -12,28 +13,26 @@ import java.sql.SQLException;
 @PageTitle("Register Conference")
 @Route("organizer")
 @PermitAll
-public class OrganizerView extends HorizontalLayout {
-    public OrganizerView() throws SQLException {
+public class OrganizerView extends HorizontalLayout implements BeforeEnterObserver {
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
         if (!isLoggedIn()) {
-            logout();
+            event.rerouteTo("login");
         }
-
-        setSizeFull();
-
-        organizerDashboard dashboard = new organizerDashboard();
-        add(dashboard);
-
     }
 
+    public OrganizerView() throws SQLException {
+        setSizeFull();
+
+        // Assuming 'organizerDashboard' is a valid Vaadin component
+        organizerDashboard dashboard = new organizerDashboard();
+        add(dashboard);
+    }
 
     private boolean isLoggedIn() {
         VaadinSession session = VaadinSession.getCurrent();
         String username = (String) session.getAttribute("username");
         return username != null;
-    }
-
-    private void logout() {
-        VaadinSession.getCurrent().close();
-        UI.getCurrent().getPage().executeJs("window.location.href = 'login'");
     }
 }
