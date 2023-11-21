@@ -16,6 +16,8 @@ public class Organizer extends User{
         super(username, password, name, email);
     }
 
+
+
     @Override
     public boolean login(String username, String password) throws SQLException {
         DBConnector dbConnector = new DBConnector();

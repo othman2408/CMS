@@ -363,7 +363,7 @@ public class organizerDashboard extends VerticalMenu {
         // Main div
         Div card = new Div();
         card.getStyle()
-                .set("background-image", "linear-gradient(to top, rgb(122 183 233 / 74%) 0%, rgb(160 185 157) 100%)")
+                .set("background-image", "linear-gradient(to top, rgb(162 122 233 / 74%) 0%, rgb(185 157 166) 100%)")
                 .set("border-radius", "8px")
                 .set("padding", "3rem 1rem 1rem 1rem")
                 .set("width", "90%")
@@ -446,12 +446,12 @@ public class organizerDashboard extends VerticalMenu {
         Button edit = new Button(new Icon(VaadinIcon.EDIT));
         edit.getStyle()
                 .set("border-radius", "4px")
-                .set("background", "rgb(107 156 187)")
+                .set("background", "rgb(144 112 205)")
                 .set("color", "white")
                 .set("font-weight", "bold")
                 .set("font-size", "16px")
                 .set("cursor", "pointer")
-                .set("border", "1px solid #00000017")
+                .set("border", "1px solid rgb(0 0 0 / 15%)")
                 .set("border-radius", "100%")
                 .set("width", "4rem")
                 .set("height", "4rem");
@@ -460,12 +460,12 @@ public class organizerDashboard extends VerticalMenu {
         delete.addClassName("delete-button");
         delete.getStyle()
                 .set("border-radius", "4px")
-                .set("background", "rgb(107 156 187)")
+                .set("background", "rgb(144 112 205)")
                 .set("color", "white")
                 .set("font-weight", "bold")
                 .set("font-size", "16px")
                 .set("cursor", "pointer")
-                .set("border", "1px solid #00000017")
+                .set("border", "1px solid rgb(0 0 0 / 15%)")
                 .set("border-radius", "100%")
                 .set("width", "4rem")
                 .set("height", "4rem");
@@ -524,7 +524,7 @@ public class organizerDashboard extends VerticalMenu {
         getSections().get(0).getStyle().set("background-image", "linear-gradient(60deg, #29323c 0%, #485563 100%)");
         getSections().get(1).getStyle().set("background-image", "linear-gradient(-20deg, #616161 0%, #9bc5c3 100%)");
         getSections().get(2).getStyle().set("background-image", "linear-gradient(to top, #e6b980 0%, #eacda3 100%)");
-        getSections().get(3).getStyle().set("background-image", "linear-gradient(135deg, #5ee7df 0%, #b490ca 100%)");
+        getSections().get(3).getStyle().set("background-image", "linear-gradient(15deg, rgba(81, 19, 122, 0.66) 0%, rgb(153 208 128 / 75%) 100%)");
         getSections().get(4).getStyle().set("background-image", "linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)");
     }
 
