@@ -10,9 +10,8 @@ public class DBConnector {
      public String dburl = null;
      public String user = null;
      public String pass = null;
-    
 
-
+     
     Statement stmt;
     Connection conn;
     ResultSet rs;
@@ -352,13 +351,47 @@ public class DBConnector {
         return conferences;
     }
 
+    public int getOrganizerConfNo(String username) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Conference_View WHERE ORGANIZER = ?";
+        java.sql.PreparedStatement preparedStatement = conn.prepareStatement(sql);
+        preparedStatement.setString(1, username);
+        rs = preparedStatement.executeQuery();
+        if(rs.next()) {
+            return rs.getInt(1);
+        }
+        return 0;
+    }
+
+    public List<Reviewer> getAllReviewer() throws SQLException {
+        List<Reviewer> reviewers = new ArrayList<>();
+        String sql = "select * from USERS where role = 'Reviewer'";
+
+        if(stmt != null) {
+            try {
+                rs = stmt.executeQuery(sql);
+                while(rs.next()) {
+                    reviewers.add(new Reviewer(rs.getString("USERNAME"), rs.getString("PASSWORD"), rs.getString("NAME"), rs.getString("EMAIL")));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return reviewers;
+    }
+
 
 
     public static void main(String[] args) throws SQLException {
         DBConnector dbConnector = new DBConnector();
 
-        for(Conference c : dbConnector.getOrganizerConferences("othman")) {
-            System.out.println(c.getName());
+//        for(Conference c : dbConnector.getOrganizerConferences("othman")) {
+//            System.out.println(c.getName());
+//        }
+
+//        System.out.println(dbConnector.getOrganizerConfNo("othman"));
+
+        for(Reviewer r : dbConnector.getAllReviewer()) {
+            System.out.println(r.getName());
         }
 
 

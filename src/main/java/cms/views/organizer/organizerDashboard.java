@@ -71,7 +71,7 @@ public class organizerDashboard extends VerticalMenu {
     }
 
     private static Section createReviewersSection() {
-        return new Section(new H1("Reviewers"));
+        return new Section(new H1("Reviewers"), reviewersList(dbConnector.getReviewers()));
     }
 
     private static Section createVenuesSection() {
@@ -232,7 +232,7 @@ public class organizerDashboard extends VerticalMenu {
         return venueSelect;
     }
 
-    private static Div userCard(User user) {
+    private static Div userCard(User user) throws SQLException {
         Div card = new Div();
         card.getStyle()
                 .set("background-image", "linear-gradient(to top, rgb(122 183 233 / 74%) 0%, rgb(160 185 157) 100%)")
@@ -256,13 +256,18 @@ public class organizerDashboard extends VerticalMenu {
         Avatar avatar = new Avatar();
         avatar.setName(user.getName());
         avatar.setImage("https://em-content.zobj.net/source/microsoft-teams/363/grinning-face_1f600.png");
-        avatar.getStyle().set("width", "100px")
+        avatar.getStyle()
+                .set("width", "100px")
                 .set("height", "100px")
                 .set("border-radius", "50%")
-                .set("background", "white")
-                .set("border", "1px solid #e6e6e6")
-                .set("box-shadow", "0 2px 4px 0 rgba(0, 0, 0, 0.1)")
+                .set("background", "transparent")
                 .set("margin-bottom", "20px");
+
+        Span name = new Span(user.getName());
+        name.getStyle().set("font-size", "20px")
+                .set("font-weight", "bold")
+                .set("margin-bottom", "10px");
+
 
         Span role = new Span("Organizer");
         role.getElement().getThemeList().add("badge pill");
@@ -270,7 +275,7 @@ public class organizerDashboard extends VerticalMenu {
                 .set("background-image", "linear-gradient(135deg, #f5f7fa 0%, #b9bee39e 100%)")
                 .set("font-weight", "bold");
 
-        firstRow.add(avatar, role);
+        firstRow.add(avatar,name, role);
 
         Div secondRow = new Div();
         secondRow.getStyle()
@@ -281,15 +286,16 @@ public class organizerDashboard extends VerticalMenu {
                 .set("margin-bottom", "10px")
                 .set("padding-bottom", "15px")
                 .set("border-bottom", "1px solid rgb(0 0 0 / 5%)")
-                .set("font-weight", "600");
+                .set("font-weight", "600")
+                .set("font-family", "Open Sans, sans-serif !important");
 
         Paragraph ID = new Paragraph("ID: " + user.getId());
 
-        Paragraph name = new Paragraph("Name: " + user.getName());
+        Paragraph confCount = new Paragraph("Conferences: " + dbConnector.getOrganizerConfNo(user.getUsername()));
 
         Paragraph email = new Paragraph("Email: " + user.getEmail());
 
-        secondRow.add(ID, name, email);
+        secondRow.add(ID, confCount, email);
 
         Div thirdRow = new Div();
         thirdRow.getStyle()
@@ -313,6 +319,7 @@ public class organizerDashboard extends VerticalMenu {
                 .set("cursor", "pointer")
                 .set("border", "1px solid #00000017");
 
+        // Edit button handler
         handleEdit(edit);
 
         Button logout = new Button("Logout");
@@ -322,6 +329,7 @@ public class organizerDashboard extends VerticalMenu {
                 .set("cursor", "pointer")
                 .set("color", "rgb(209 46 46 / 71%)");
 
+        // Logout button handler
         handleLogout(logout);
 
         thirdRow.add(edit, logout);
@@ -331,13 +339,154 @@ public class organizerDashboard extends VerticalMenu {
         return card;
     }
 
+    private static Div reviewersList(List<Reviewer> reviewers) {
+        // Main div
+        Div container = new Div();
+        container.getStyle()
+                .set("margin", "auto")
+                .set("margin-top", "3rem")
+                .set("width", "90%")
+                .set("display", "flex")
+                .set("flex-wrap", "wrap")
+                .set("justify-content", "center")
+                .set("gap", "2rem");
+
+        // Create a card for each reviewer
+        for (Reviewer r : reviewers) {
+            container.add(reviewerCard(r));
+        }
+
+        return container;
+    }
+
+    private static Div reviewerCard(Reviewer reviewer) {
+        // Main div
+        Div card = new Div();
+        card.getStyle()
+                .set("background-image", "linear-gradient(to top, rgb(122 183 233 / 74%) 0%, rgb(160 185 157) 100%)")
+                .set("border-radius", "8px")
+                .set("padding", "3rem 1rem 1rem 1rem")
+                .set("width", "90%")
+                .set("max-width", "360px")
+                .set("margin", "5rem auto")
+                .set("font-family", "Open Sans, sans-serif !important")
+                .set("box-shadow", "rgb(0 0 0 / 7%) 0px 4px 20px 20px");
+
+        // First row
+        Div firstRow = new Div();
+        firstRow.getStyle()
+                .set("display", "flex")
+                .set("flex-direction", "column")
+                .set("align-items", "center")
+                .set("margin-bottom", "20px")
+                .set("padding-bottom", "20px")
+                .set("border-bottom", "1px solid rgb(0 0 0 / 5%)");
+
+        // Avatar
+        Avatar avatar = new Avatar();
+        avatar.setName(reviewer.getName());
+        avatar.setImage("https://em-content.zobj.net/source/microsoft-teams/363/grinning-face_1f600.png");
+        avatar.getStyle()
+                .set("width", "100px")
+                .set("height", "100px")
+                .set("background", "transparent")
+                .set("border-radius", "50%")
+                .set("margin-bottom", "20px");
+
+        // Name
+        Span name = new Span(reviewer.getName());
+        name.getStyle().set("font-size", "20px")
+                .set("font-weight", "bold")
+                .set("margin-bottom", "10px");
+
+        // Role
+        Span role = new Span("Reviewer");
+        role.getElement().getThemeList().add("badge pill");
+        role.getStyle().set("user-select", "none")
+                .set("background-image", "linear-gradient(135deg, #f5f7fa 0%, #b9bee39e 100%)")
+                .set("font-weight", "bold");
+
+        firstRow.add(avatar, name, role);
+
+        // Second row
+        Div secondRow = new Div();
+        secondRow.getStyle()
+                .set("display", "flex")
+                .set("flex-direction", "column")
+                .set("font-family", "Noto Sans")
+                .set("text-align", "left")
+                .set("margin-bottom", "10px")
+                .set("padding-bottom", "15px")
+                .set("border-bottom", "1px solid rgb(0 0 0 / 5%)")
+                .set("font-weight", "600")
+                .set("font-family", "Open Sans, sans-serif !important");
+
+        // ID
+        Paragraph ID = new Paragraph("ID: " + reviewer.getId());
+
+        // Paper count
+        Paragraph paperCount = new Paragraph("Papers: Will be added later");
+
+        // Email
+        Paragraph email = new Paragraph("Email: " + reviewer.getEmail());
+
+        secondRow.add(ID, paperCount, email);
+
+        // Third row
+        Div thirdRow = new Div();
+        thirdRow.getStyle()
+                .set("display", "flex")
+                .set("align-items", "center")
+                .set("justify-content", "center")
+                .set("width", "100%")
+                .set("margin-top", "20px")
+                .set("gap", "2rem");
+
+        // Edit button
+        Button edit = new Button(new Icon(VaadinIcon.EDIT));
+        edit.getStyle()
+                .set("border-radius", "4px")
+                .set("background", "rgb(107 156 187)")
+                .set("color", "white")
+                .set("font-weight", "bold")
+                .set("font-size", "16px")
+                .set("cursor", "pointer")
+                .set("border", "1px solid #00000017")
+                .set("border-radius", "100%")
+                .set("width", "4rem")
+                .set("height", "4rem");
+
+        Button delete = new Button(new Icon(VaadinIcon.TRASH));
+        delete.addClassName("delete-button");
+        delete.getStyle()
+                .set("border-radius", "4px")
+                .set("background", "rgb(107 156 187)")
+                .set("color", "white")
+                .set("font-weight", "bold")
+                .set("font-size", "16px")
+                .set("cursor", "pointer")
+                .set("border", "1px solid #00000017")
+                .set("border-radius", "100%")
+                .set("width", "4rem")
+                .set("height", "4rem");
+
+
+        thirdRow.add(edit, delete);
+
+        card.add(firstRow, secondRow, thirdRow);
+
+        return card;
+
+    }
+
     private static VerticalLayout organizerConferences(String organizerUser) throws SQLException {
 
         VerticalLayout container = new VerticalLayout();
         container.getStyle()
                 .set("margin", "auto")
                 .set("margin-top", "5rem")
-                .set("width", "90%");
+                .set("width", "90%")
+                .set("height", "auto");
 
         H2 title = new H2("My Conferences List ");
         title.getStyle().set("text-align", "center")

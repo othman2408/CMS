@@ -12,3 +12,12 @@
     color: #354653;
     font-size: 14px;
 }
+
+.delete-button {
+    transition: background-color 200ms ease;
+}
+/*background: rgb(107, 156, 187);*/
+
+.delete-button:hover {
+    background: rgb(201, 83, 83) !important;
+}
