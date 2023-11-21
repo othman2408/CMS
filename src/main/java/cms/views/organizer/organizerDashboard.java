@@ -75,8 +75,9 @@ public class organizerDashboard extends VerticalMenu {
     }
 
     private static Section createVenuesSection() {
-        return new Section(new H1("Venues"));
+        return new Section(new H1("Venues"), venuesList());
     }
+
 
     private static VerticalLayout createConferences() throws SQLException {
         VerticalLayout container = new VerticalLayout();
@@ -479,6 +480,7 @@ public class organizerDashboard extends VerticalMenu {
 
     }
 
+
     private static VerticalLayout organizerConferences(String organizerUser) throws SQLException {
 
         VerticalLayout container = new VerticalLayout();
@@ -520,8 +522,43 @@ public class organizerDashboard extends VerticalMenu {
         return container;
     }
 
+    private static VerticalLayout venuesList() {
+        VerticalLayout container = new VerticalLayout();
+        container.getStyle()
+                .set("margin", "auto")
+                .set("margin-top", "5rem")
+                .set("width", "90%")
+                .set("height", "auto");
+
+        H2 title = new H2("Venues List, NOT IMPLEMENTED YET ");
+        title.getStyle().set("text-align", "center")
+                .set("margin", "auto");
+
+        Grid<Venue> grid = new Grid<>(Venue.class, false);
+        grid.getStyle()
+                .set("margin", "auto")
+                .set("margin-top", "3rem")
+                .set("width", "90%")
+                .set("background-image", "linear-gradient(to top, rgb(122 183 233 / 74%) 0%, rgb(160 185 157) 100%)");
+
+        // Set the Height of the grid to be dynamic
+        grid.setAllRowsVisible(true);
+
+        // Add columns to the grid
+        grid.addColumn(Venue::getVenueId).setHeader("ID");
+        grid.addColumn(Venue::getLocation).setHeader("Location");
+//        grid.addColumn(Venue::getCapacity).setHeader("Availability");
+
+//        grid.setItems(venues);
+
+        container.add(title);
+
+        return container;
+
+    }
+
     private void customizeSections() {
-        getSections().get(0).getStyle().set("background-image", "linear-gradient(60deg, #29323c 0%, #485563 100%)");
+        getSections().get(0).getStyle().set("background-image", "linear-gradient(60deg, rgb(41 51 60) 0%, rgb(72 99 85) 100%)");
         getSections().get(1).getStyle().set("background-image", "linear-gradient(-20deg, #616161 0%, #9bc5c3 100%)");
         getSections().get(2).getStyle().set("background-image", "linear-gradient(to top, #e6b980 0%, #eacda3 100%)");
         getSections().get(3).getStyle().set("background-image", "linear-gradient(15deg, rgba(81, 19, 122, 0.66) 0%, rgb(153 208 128 / 75%) 100%)");

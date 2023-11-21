@@ -381,6 +381,28 @@ public class DBConnector {
         return reviewers;
     }
 
+    public List<Venue> getAllVenues() throws SQLException {
+        List<Venue> venues = new ArrayList<>();
+        String sql = "select * from All_Venues";
+
+        if (stmt != null) {
+            try {
+                rs = stmt.executeQuery(sql);
+                while (rs.next()) {
+                    int venueId = rs.getInt("VENUE_ID");
+                    String location = rs.getString("LOCATION");
+                    Boolean availability = Boolean.valueOf(rs.getString("AVAILABILITY"));
+                    venues.add(new Venue(venueId, location, availability ? true : false));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return venues;
+    }
+
+
+
 
 
     public static void main(String[] args) throws SQLException {
@@ -392,8 +414,13 @@ public class DBConnector {
 
 //        System.out.println(dbConnector.getOrganizerConfNo("othman"));
 
-        for(Reviewer r : dbConnector.getAllReviewer()) {
-            System.out.println(r.getName());
+//        for(Reviewer r : dbConnector.getAllReviewer()) {
+//            System.out.println(r.getName());
+//        }
+
+        // get the venue, and check if it is available
+        for (Venue v : dbConnector.getAllVenues()) {
+            System.out.println(v.getLocation() + " " + v.isAvailable());
         }
 
 

@@ -5,6 +5,8 @@ import java.util.List;
 public class Venue {
     private int venueId;
     private String location;
+
+    private boolean isAvailable;
     private List<Conference> hostedConferences;
 
     public Venue() {
@@ -19,6 +21,12 @@ public class Venue {
         this.venueId = venueId;
         this.location = location;
         this.hostedConferences = hostedConferences;
+    }
+
+    public Venue(int venueId, String location, boolean isAvailable) {
+        this.venueId = venueId;
+        this.location = location;
+        this.isAvailable = isAvailable;
     }
 
 
@@ -36,6 +44,14 @@ public class Venue {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
     }
 
     public List<Conference> getHostedConferences() {
