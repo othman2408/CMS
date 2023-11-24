@@ -447,12 +447,12 @@ public class organizerDashboard extends VerticalMenu {
         Button edit = new Button(new Icon(VaadinIcon.EDIT));
         edit.getStyle()
                 .set("border-radius", "4px")
-                .set("background", "rgb(144 112 205)")
+                .set("background-image", "linear-gradient(15deg, rgb(26 26 27 / 21%) 0%, rgb(124 57 201 / 64%) 100%)")
                 .set("color", "white")
                 .set("font-weight", "bold")
                 .set("font-size", "16px")
                 .set("cursor", "pointer")
-                .set("border", "1px solid rgb(0 0 0 / 15%)")
+                .set("border", "1px solid rgb(0 0 0 / 10%)")
                 .set("border-radius", "100%")
                 .set("width", "4rem")
                 .set("height", "4rem");
@@ -461,12 +461,12 @@ public class organizerDashboard extends VerticalMenu {
         delete.addClassName("delete-button");
         delete.getStyle()
                 .set("border-radius", "4px")
-                .set("background", "rgb(144 112 205)")
+                .set("background-image", "linear-gradient(15deg, rgb(26 26 27 / 21%) 0%, rgb(124 57 201 / 64%) 100%)")
                 .set("color", "white")
                 .set("font-weight", "bold")
                 .set("font-size", "16px")
                 .set("cursor", "pointer")
-                .set("border", "1px solid rgb(0 0 0 / 15%)")
+                .set("border", "1px solid rgb(0 0 0 / 10%)")
                 .set("border-radius", "100%")
                 .set("width", "4rem")
                 .set("height", "4rem");
