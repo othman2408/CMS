@@ -102,18 +102,18 @@ public class organizerDashboard extends VerticalMenu {
         deadline.setRequired(true);
         deadline.setPlaceholder("Select a deadline date");
 
-        Div reviewerDiv = new Div();
-        reviewerDiv.getStyle()
-                .set("display", "flex")
-                .set("align-items", "baseline")
-                .set("gap", "10px")
-                .set("margin-bottom", "15px")
-                .set("width", "100%");
-
-        MultiSelectComboBox<String> reviewerSelect = createReviewerSelect(cms.getReviewers() );
-        RegisterDialog registerDialog = new RegisterDialog("Add new", "Add");
-        registerDialog.addClassName("reviewer-dialog");
-        reviewerDiv.add(reviewerSelect, registerDialog);
+//        Div reviewerDiv = new Div();
+//        reviewerDiv.getStyle()
+//                .set("display", "flex")
+//                .set("align-items", "baseline")
+//                .set("gap", "10px")
+//                .set("margin-bottom", "15px")
+//                .set("width", "100%");
+//
+//        MultiSelectComboBox<String> reviewerSelect = createReviewerSelect(cms.getReviewers() );
+//        RegisterDialog registerDialog = new RegisterDialog("Add new", "Add");
+//        registerDialog.addClassName("reviewer-dialog");
+//        reviewerDiv.add(reviewerSelect, registerDialog);
 
         Select<String> venueSelect = createVenueSelect(dbConnector.getAvailableVenues());
 
@@ -139,10 +139,10 @@ public class organizerDashboard extends VerticalMenu {
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
-            handleConferenceRegister(Create, name, startDate, endDate, deadline, reviewerSelect, venueSelect, organizerId, venueId);
+            handleConferenceRegister(Create, name, startDate, endDate, deadline, null, venueSelect, organizerId, venueId);
         });
 
-        container.add(title, name, startDate, endDate, deadline, reviewerDiv, venueSelect, Create);
+        container.add(title, name, startDate, endDate, deadline, venueSelect, Create);
         return container;
     }
 

@@ -83,6 +83,12 @@ VALUES ('Location D');
 INSERT INTO Venue (location)
 VALUES ('Location E');
 
+INSERT INTO Venue (location)
+VALUES ('Location F');
+
+INSERT INTO Venue (location)
+VALUES ('Location G');
+
 
 -- Inserting sample data into the Conference table
 INSERT INTO Conference (name, start_date, end_date, deadline, conference_code, organizer_id, venue_id)
@@ -169,3 +175,16 @@ DROP TABLE Venue;
 DROP TABLE Users;
 
 commit;
+
+
+-- delete all tables
+
+DROP VIEW Conference_View;
+DROP VIEW Available_Venues;
+
+DROP TABLE Paper_Keyword;
+DROP TABLE Paper;
+DROP TABLE Keyword;
+DROP TABLE Conference;
+DROP TABLE Venue;
+DROP TABLE Users;

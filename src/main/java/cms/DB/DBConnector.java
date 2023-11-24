@@ -13,7 +13,6 @@ public class DBConnector {
 
 
 
-
     Statement stmt;
     Connection conn;
     ResultSet rs;
