@@ -104,18 +104,18 @@ public class organizerDashboard extends VerticalMenu {
         deadline.setRequired(true);
         deadline.setPlaceholder("Select a deadline date");
 
-        Div reviewerDiv = new Div();
-        reviewerDiv.getStyle()
-                .set("display", "flex")
-                .set("align-items", "baseline")
-                .set("gap", "10px")
-                .set("margin-bottom", "15px")
-                .set("width", "100%");
-
-        MultiSelectComboBox<String> reviewerSelect = createReviewerSelect(cms.getReviewers() );
-        RegisterDialog registerDialog = new RegisterDialog("Add new", "Add");
-        registerDialog.addClassName("reviewer-dialog");
-        reviewerDiv.add(reviewerSelect, registerDialog);
+//        Div reviewerDiv = new Div();
+//        reviewerDiv.getStyle()
+//                .set("display", "flex")
+//                .set("align-items", "baseline")
+//                .set("gap", "10px")
+//                .set("margin-bottom", "15px")
+//                .set("width", "100%");
+//
+//        MultiSelectComboBox<String> reviewerSelect = createReviewerSelect(cms.getReviewers() );
+//        RegisterDialog registerDialog = new RegisterDialog("Add new", "Add");
+//        registerDialog.addClassName("reviewer-dialog");
+//        reviewerDiv.add(reviewerSelect, registerDialog);
 
         Select<String> venueSelect = createVenueSelect(dbConnector.getAvailableVenues());
 
@@ -449,12 +449,12 @@ public class organizerDashboard extends VerticalMenu {
         Button edit = new Button(new Icon(VaadinIcon.EDIT));
         edit.getStyle()
                 .set("border-radius", "4px")
-                .set("background", "rgb(144 112 205)")
+                .set("background-image", "linear-gradient(15deg, rgb(26 26 27 / 21%) 0%, rgb(124 57 201 / 64%) 100%)")
                 .set("color", "white")
                 .set("font-weight", "bold")
                 .set("font-size", "16px")
                 .set("cursor", "pointer")
-                .set("border", "1px solid rgb(0 0 0 / 15%)")
+                .set("border", "1px solid rgb(0 0 0 / 10%)")
                 .set("border-radius", "100%")
                 .set("width", "4rem")
                 .set("height", "4rem");
@@ -463,12 +463,12 @@ public class organizerDashboard extends VerticalMenu {
         delete.addClassName("delete-button");
         delete.getStyle()
                 .set("border-radius", "4px")
-                .set("background", "rgb(144 112 205)")
+                .set("background-image", "linear-gradient(15deg, rgb(26 26 27 / 21%) 0%, rgb(124 57 201 / 64%) 100%)")
                 .set("color", "white")
                 .set("font-weight", "bold")
                 .set("font-size", "16px")
                 .set("cursor", "pointer")
-                .set("border", "1px solid rgb(0 0 0 / 15%)")
+                .set("border", "1px solid rgb(0 0 0 / 10%)")
                 .set("border-radius", "100%")
                 .set("width", "4rem")
                 .set("height", "4rem");
