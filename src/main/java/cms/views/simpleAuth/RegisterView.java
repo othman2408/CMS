@@ -50,7 +50,8 @@ public class RegisterView extends VerticalLayout {
         private void setLayout() {
                 setAlignItems(Alignment.CENTER);
                 setJustifyContentMode(JustifyContentMode.CENTER);
-                setHeightFull();
+
+                getStyle().set("padding", "5rem");
         }
 
         /**

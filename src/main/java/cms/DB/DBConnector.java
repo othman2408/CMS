@@ -12,8 +12,6 @@ public class DBConnector {
      public String pass = null;
 
 
-
-
     Statement stmt;
     Connection conn;
     ResultSet rs;

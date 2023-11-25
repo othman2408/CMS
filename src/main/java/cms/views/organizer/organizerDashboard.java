@@ -50,6 +50,7 @@ public class organizerDashboard extends VerticalMenu {
         customizeSections();
     }
 
+
     private static Section createAccountSection() throws SQLException {
         return new Section(new H1("My Account"), userCard(dbConnector.getUser(loggedInUser)));
     }
@@ -78,11 +79,12 @@ public class organizerDashboard extends VerticalMenu {
         return new Section(new H1("Venues"), venuesList());
     }
 
-
     private static VerticalLayout createConferences() throws SQLException {
         VerticalLayout container = new VerticalLayout();
-        container.setWidth("50%");
-        container.getStyle().set("margin", "auto");
+        container.getStyle()
+                .set("margin", "auto")
+                .set("padding", "5rem")
+                .set("width", "50%");
 
         H3 title = new H3("Please enter the conference details");
         title.getStyle().set("text-align", "center")
@@ -139,10 +141,10 @@ public class organizerDashboard extends VerticalMenu {
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
-            handleConferenceRegister(Create, name, startDate, endDate, deadline, reviewerSelect, venueSelect, organizerId, venueId);
+            handleConferenceRegister(Create, name, startDate, endDate, deadline, null, venueSelect, organizerId, venueId);
         });
 
-        container.add(title, name, startDate, endDate, deadline, reviewerDiv, venueSelect, Create);
+        container.add(title, name, startDate, endDate, deadline, venueSelect, Create);
         return container;
     }
 
@@ -563,11 +565,14 @@ public class organizerDashboard extends VerticalMenu {
         getSections().get(2).getStyle().set("background-image", "linear-gradient(to top, #e6b980 0%, #eacda3 100%)");
         getSections().get(3).getStyle().set("background-image", "linear-gradient(15deg, rgba(81, 19, 122, 0.66) 0%, rgb(153 208 128 / 75%) 100%)");
         getSections().get(4).getStyle().set("background-image", "linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)");
+
+        // change the height of the section set it to scroll
+        getSections().forEach(section -> section.getStyle().set("overflow", "scroll"));
     }
 
     private static void handleEdit(Button edit) {
         edit.addClickListener(e -> {
-            Notify.notify("Not now", 3000, "warning");
+            Notify.notify("Not implemented yet!", 3000, "warning");
         });
     }
 

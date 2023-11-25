@@ -24,8 +24,6 @@ class CMSTest {
 
     @Test
     public void testRegisterUser() throws SQLException {
-        // Create a mock DBConnector
-        dbConnector = Mockito.mock(DBConnector.class);
 
         User user = new Organizer("othman", "mypass1", "othman alibrahim", "othman@gmail.com");
 
