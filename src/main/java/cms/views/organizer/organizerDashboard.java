@@ -334,61 +334,40 @@ public class organizerDashboard extends VerticalMenu {
 
         // First row
         Div firstRow = new Div();
-        firstRow.getStyle()
-                .set("display", "flex")
-                .set("flex-direction", "column")
-                .set("align-items", "center")
-                .set("margin-bottom", "20px")
-                .set("padding-bottom", "20px")
-                .set("border-bottom", "1px solid rgb(0 0 0 / 5%)");
+        firstRow.addClassName("first-row");
 
         // Avatar
         Avatar avatar = new Avatar();
         avatar.setName(reviewer.getName());
         avatar.setImage("https://em-content.zobj.net/source/microsoft-teams/363/grinning-face_1f600.png");
-        avatar.getStyle()
-                .set("width", "100px")
-                .set("height", "100px")
-                .set("background", "transparent")
-                .set("border-radius", "50%")
-                .set("margin-bottom", "20px");
+        avatar.addClassName("avatar");
 
         // Name
         Span name = new Span(reviewer.getName());
-        name.getStyle().set("font-size", "20px")
-                .set("font-weight", "bold")
-                .set("margin-bottom", "10px");
+        name.addClassName("user-name");
 
         // Role
         Span role = new Span("Reviewer");
         role.getElement().getThemeList().add("badge pill");
-        role.getStyle().set("user-select", "none")
-                .set("background-image", "linear-gradient(135deg, #f5f7fa 0%, #b9bee39e 100%)")
-                .set("font-weight", "bold");
+        role.addClassName("role");
 
         firstRow.add(avatar, name, role);
 
         // Second row
         Div secondRow = new Div();
-        secondRow.getStyle()
-                .set("display", "flex")
-                .set("flex-direction", "column")
-                .set("font-family", "Noto Sans")
-                .set("text-align", "left")
-                .set("margin-bottom", "10px")
-                .set("padding-bottom", "15px")
-                .set("border-bottom", "1px solid rgb(0 0 0 / 5%)")
-                .set("font-weight", "600")
-                .set("font-family", "Open Sans, sans-serif !important");
+        secondRow.addClassName("second-row");
 
         // ID
         Paragraph ID = new Paragraph("ID: " + reviewer.getId());
+        ID.addClassName("user-id");
 
         // Paper count
         Paragraph paperCount = new Paragraph("Papers: Will be added later");
+        paperCount.addClassName("paper-count");
 
         // Email
         Paragraph email = new Paragraph("Email: " + reviewer.getEmail());
+        email.addClassName("email");
 
         secondRow.add(ID, paperCount, email);
 

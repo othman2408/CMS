@@ -57,7 +57,7 @@
     font-weight: bold;
 }
 
-.user-id, .conf-count,.email {
+.user-id, .conf-count,.email, .paper-count {
     font-weight: bold;
     background-image: linear-gradient(135deg, rgb(245 247 250) 0%, rgb(185 197 227 / 62%) 100%);
     padding: .2rem 1rem;
