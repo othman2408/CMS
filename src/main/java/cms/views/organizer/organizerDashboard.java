@@ -237,100 +237,57 @@ public class organizerDashboard extends VerticalMenu {
 
     private static Div userCard(User user) throws SQLException {
         Div card = new Div();
-        card.getStyle()
-                .set("background-image", "linear-gradient(to top, rgb(122 183 233 / 74%) 0%, rgb(160 185 157) 100%)")
-                .set("border-radius", "8px")
-                .set("padding", "3rem 1rem 1rem 1rem")
-                .set("width", "90%")
-                .set("max-width", "360px")
-                .set("margin", "5rem auto")
-                .set("font-family", "Open Sans, sans-serif !important")
-                .set("box-shadow", "rgb(0 0 0 / 7%) 0px 4px 20px 20px");
+        card.addClassName("user-card");
 
         Div firstRow = new Div();
-        firstRow.getStyle()
-                .set("display", "flex")
-                .set("flex-direction", "column")
-                .set("align-items", "center")
-                .set("margin-bottom", "20px")
-                .set("padding-bottom", "20px")
-                .set("border-bottom", "1px solid rgb(0 0 0 / 5%)");
+        firstRow.addClassName("first-row");
+
 
         Avatar avatar = new Avatar();
         avatar.setName(user.getName());
         avatar.setImage("https://em-content.zobj.net/source/microsoft-teams/363/grinning-face_1f600.png");
-        avatar.getStyle()
-                .set("width", "100px")
-                .set("height", "100px")
-                .set("border-radius", "50%")
-                .set("background", "transparent")
-                .set("margin-bottom", "20px");
+        avatar.setClassName("avatar");
 
         Span name = new Span(user.getName());
-        name.getStyle().set("font-size", "20px")
-                .set("font-weight", "bold")
-                .set("margin-bottom", "10px");
+        name.addClassName("user-name");
+
 
 
         Span role = new Span("Organizer");
         role.getElement().getThemeList().add("badge pill");
-        role.getStyle().set("user-select", "none")
-                .set("background-image", "linear-gradient(135deg, #f5f7fa 0%, #b9bee39e 100%)")
-                .set("font-weight", "bold");
+        role.addClassName("role");
 
         firstRow.add(avatar,name, role);
 
         Div secondRow = new Div();
-        secondRow.getStyle()
-                .set("display", "flex")
-                .set("flex-direction", "column")
-                .set("font-family", "Noto Sans")
-                .set("text-align", "left")
-                .set("margin-bottom", "10px")
-                .set("padding-bottom", "15px")
-                .set("border-bottom", "1px solid rgb(0 0 0 / 5%)")
-                .set("font-weight", "600")
-                .set("font-family", "Open Sans, sans-serif !important");
+        secondRow.addClassName("second-row");
+
 
         Paragraph ID = new Paragraph("ID: " + user.getId());
+        ID.setClassName("user-id");
 
         Paragraph confCount = new Paragraph("Conferences: " + dbConnector.getOrganizerConfNo(user.getUsername()));
+        confCount.setClassName("conf-count");
 
         Paragraph email = new Paragraph("Email: " + user.getEmail());
+        email.setClassName("email");
 
         secondRow.add(ID, confCount, email);
 
         Div thirdRow = new Div();
-        thirdRow.getStyle()
-                .set("display", "flex")
-                .set("align-items", "center")
-                .set("justify-content", "center")
-                .set("flex-direction", "column")
-                .set("gap", "6px")
-                .set("font-family", "Open Sans, sans-serif !important");
+        thirdRow.addClassName("third-row");
+
 
         Button edit = new Button("Edit");
-        edit.getStyle().set("margin-top", "20px")
-                .set("border-radius", "4px")
-                .set("width", "auto")
-                .set("padding", "0 2.5rem")
-                .set("margin", "auto")
-                .set("background", "rgb(107 156 187)")
-                .set("color", "white")
-                .set("font-weight", "bold")
-                .set("font-size", "16px")
-                .set("cursor", "pointer")
-                .set("border", "1px solid #00000017");
+        edit.addClassName("edit-button");
 
         // Edit button handler
         handleEdit(edit);
 
         Button logout = new Button("Logout");
         logout.setIcon(new Icon(VaadinIcon.SIGN_OUT));
-        logout.getStyle()
-                .set("background", "transparent")
-                .set("cursor", "pointer")
-                .set("color", "rgb(209 46 46 / 71%)");
+        logout.addClassName("logout-button");
+
 
         // Logout button handler
         handleLogout(logout);

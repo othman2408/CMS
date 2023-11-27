@@ -24,3 +24,97 @@
 .delete-button:hover {
    background-color: #fc6076 !important;
 }
+
+.user-card {
+    background-image: linear-gradient(to top, rgb(122 183 233 / 74%) 0%, rgb(160 185 157) 100%);
+    border-radius: 8px;
+    padding: 3rem 1rem 1rem 1rem;
+    width: 90%;
+    max-width: 360px;
+    margin: 5rem auto;
+    font-family: Open Sans, sans-serif !important;
+    box-shadow: rgb(0 0 0 / 7%) 0px 4px 20px 20px;
+}
+
+.first-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgb(0 0 0 / 5%);
+}
+
+.user-name {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.role {
+    user-select: none;
+    background-image: linear-gradient(135deg, rgb(245 247 250) 0%, rgb(185 197 227 / 62%) 100%);
+    font-weight: bold;
+}
+
+.user-id, .conf-count,.email {
+    font-weight: bold;
+    background-image: linear-gradient(135deg, rgb(245 247 250) 0%, rgb(185 197 227 / 62%) 100%);
+    padding: .2rem 1rem;
+    width: fit-content;
+    border-radius: 2rem;
+    user-select: none;
+    color: #39393e;
+}
+
+.avatar {
+    user-select: none;
+    pointer-events: none;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: transparent;
+    margin-bottom: 20px;
+}
+
+.second-row {
+    display: flex;
+    flex-direction: column;
+    font-family: Open Sans, sans-serif !important;
+    text-align: left;
+    margin-bottom: 10px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgb(0 0 0 / 5%);
+    font-weight: 600;
+}
+
+.third-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 6px;
+    font-family: Open Sans, sans-serif !important;
+}
+
+.edit-button {
+    border-radius: 4px;
+    width: auto;
+    padding: 0 2.5rem;
+    margin: auto;
+    background: rgb(107 156 187);
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    border: 1px solid #00000017;
+}
+
+.logout-button {
+    background: transparent;
+    cursor: pointer;
+    color: rgb(209 46 46 / 71%);
+    border: none;
+    font-weight: bold;
+    font-size: 16px;
+}
