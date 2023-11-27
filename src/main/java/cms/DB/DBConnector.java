@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DBConnector {
-     public String dburl = null;
-     public String user = null;
-     public String pass = null;
-     
+//     public String dburl = null;
+//     public String user = null;
+//     public String pass = null;
+
+
+
     Statement stmt;
     Connection conn;
     ResultSet rs;

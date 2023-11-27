@@ -155,8 +155,14 @@ public class organizerDashboard extends VerticalMenu {
         }
 
         // Validate dates
-        if (startDate.getValue().isAfter(endDate.getValue()) || startDate.getValue().isAfter(deadline.getValue()) || endDate.getValue().isAfter(deadline.getValue())) {
-            Notify.notify("Please enter valid dates", 3000, "warning");
+        if (startDate.getValue().isAfter(endDate.getValue())) {
+            Notify.notify("Start data should be before the end date!", 3000, "warning");
+            return;
+        }else if(startDate.getValue().isAfter(deadline.getValue())) {
+            Notify.notify("Start data should be before the deadline!", 3000, "warning");
+            return;
+        }else if (deadline.getValue().isAfter(endDate.getValue())) {
+            Notify.notify("Deadline date should be after the end date!", 3000, "warning");
             return;
         }
 
