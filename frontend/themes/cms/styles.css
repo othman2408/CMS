@@ -19,10 +19,21 @@
 .delete-button {
     transition: background-color 200ms ease;
 }
-/*background: rgb(107, 156, 187);*/
 
 .delete-button:hover {
    background-color: #fc6076 !important;
+}
+
+.edit-btn, .assign-btn {
+    transition: background-color 200ms ease;
+}
+
+.edit-btn:hover {
+   background-color: #6b9cbc !important;
+}
+
+.assign-btn:hover {
+   background-color: #6b9cbc !important;
 }
 
 .user-card {

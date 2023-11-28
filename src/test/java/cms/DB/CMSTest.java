@@ -117,13 +117,19 @@ class CMSTest {
     @Test
     void testRegisterConference() {
 
-        Conference conference = new Conference("ConferenceName", null, null, null, 1, 1);
+            Conference conference = new Conference("ConferenceName", null, null, null, 1, 1);
 
-        when(dbConnector.registerConference(conference)).thenReturn(true);
+            // List of potential reviewers
+            List<String> potentialReviewers = new ArrayList<>();
+            potentialReviewers.add("reviewer1");
+            potentialReviewers.add("reviewer2");
+            potentialReviewers.add("reviewer3");
 
-        boolean isRegistered = dbConnector.registerConference(conference);
+            when(dbConnector.registerConference(conference, potentialReviewers)).thenReturn(true);
 
-        assertTrue(isRegistered);
+            boolean isRegistered = dbConnector.registerConference(conference, potentialReviewers);
+
+            assertTrue(isRegistered);
     }
 
     @Test

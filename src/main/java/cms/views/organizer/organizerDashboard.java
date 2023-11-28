@@ -18,6 +18,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.server.VaadinSession;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -72,7 +73,7 @@ public class organizerDashboard extends VerticalMenu {
     }
 
     private static Section createReviewersSection() {
-        return new Section(new H1("Reviewers"), reviewersList(dbConnector.getReviewers()));
+        return new Section(new H1("Reviewers"), conferenceReviewers());
     }
 
     private static Section createVenuesSection() {
@@ -111,10 +112,17 @@ public class organizerDashboard extends VerticalMenu {
                 .set("gap", "10px")
                 .set("width", "100%");
 
-        MultiSelectComboBox<String> reviewerSelect = createReviewerSelect(cms.getReviewers() );
+        MultiSelectComboBox<String> reviewerSelect = createReviewerSelect(dbConnector.getAvailableReviewer());
         RegisterDialog registerDialog = new RegisterDialog("Add new", "Add");
         registerDialog.addClassName("reviewer-dialog");
         reviewerDiv.add(reviewerSelect, registerDialog);
+
+        // Get list of selected reviewers
+        List<String> selectedReviewers = new ArrayList<>();
+        reviewerSelect.addValueChangeListener(event -> {
+            selectedReviewers.clear();
+            selectedReviewers.addAll(event.getValue());
+        });
 
         Select<String> venueSelect = createVenueSelect(dbConnector.getAvailableVenues());
 
@@ -127,7 +135,7 @@ public class organizerDashboard extends VerticalMenu {
             try {
                 organizerId = dbConnector.getUser(loggedInUser).getId();
                 venueId = dbConnector.getVenue(venueSelect.getValue()).getVenueId();
-                handleConferenceRegister(name, startDate, endDate, deadline, reviewerSelect, venueSelect, organizerId, venueId);
+                handleConferenceRegister(name, startDate, endDate, deadline, selectedReviewers, reviewerSelect ,venueSelect, organizerId, venueId);
             } catch (SQLException | InterruptedException ex) {
                 throw new RuntimeException(ex);
             }
@@ -137,7 +145,7 @@ public class organizerDashboard extends VerticalMenu {
         return container;
     }
 
-    private static void handleConferenceRegister(TextField name, DatePicker startDate, DatePicker endDate, DatePicker deadline, MultiSelectComboBox<String> reviewerSelect, Select<String> venueSelect, int organizerID, int venueID) throws InterruptedException {
+    private static void handleConferenceRegister(TextField name, DatePicker startDate, DatePicker endDate, DatePicker deadline, List<String> potentialReviewers, MultiSelectComboBox<String> reviewerSelect, Select<String> venueSelect, int organizerID, int venueID) throws InterruptedException {
         if (name.getValue().isEmpty() || startDate.getValue() == null || endDate.getValue() == null || deadline.getValue() == null) {
             Notify.notify("Please fill all the fields", 3000, "warning");
             return;
@@ -162,12 +170,13 @@ public class organizerDashboard extends VerticalMenu {
             return;
         }
 
-        boolean register = dbConnector.registerConference(conference);
+
+        boolean register = dbConnector.registerConference(conference,potentialReviewers);
 
         if (register) {
             Notify.notify("Conference registered successfully", 3000, "success");
 
-            // refresh the page to show the new conference, not the best solution but it works
+            // refresh the page to show the new conference, not the best solution, but it works
             String script = "setTimeout(function(){ location.reload(); }, 3000);";
             UI.getCurrent().getPage().executeJs(script);
 
@@ -298,10 +307,11 @@ public class organizerDashboard extends VerticalMenu {
         return card;
     }
 
-    private static Div reviewersList(List<Reviewer> reviewers) {
+    private static Div conferenceReviewers() {
+
         // Main div
-        Div container = new Div();
-        container.getStyle()
+        Div mainContainer = new Div();
+        mainContainer.getStyle()
                 .set("margin", "auto")
                 .set("margin-top", "3rem")
                 .set("width", "90%")
@@ -310,13 +320,52 @@ public class organizerDashboard extends VerticalMenu {
                 .set("justify-content", "center")
                 .set("gap", "2rem");
 
-        // Create a card for each reviewer
-        for (Reviewer r : reviewers) {
-            container.add(reviewerCard(r));
-        }
+        // Create Select for conferences
+        Select<String> conferenceSelect = new Select<>();
+        conferenceSelect.setLabel("Select Conference");
+        conferenceSelect.setPlaceholder("Select a conference");
+        conferenceSelect.getStyle()
+                .set("width", "100%")
+                .set("margin-bottom", "2rem");
 
-        return container;
+        // Get conferences names from the database
+        List<String> confNames= new ArrayList<>();
+        confNames = dbConnector.getOrganizerConferences(loggedInUser).stream().map(Conference::getName).collect(Collectors.toList());
+
+        // Add conferences to the select
+        conferenceSelect.setItems(confNames);
+
+        // Reviewers Container
+        Div reviewersContainer = new Div();
+        reviewersContainer.getStyle()
+                .set("margin", "auto")
+                .set("margin-top", "3rem")
+                .set("width", "90%")
+                .set("gap", "2rem")
+                .set("display", "flex")
+                .set("flex-wrap", "wrap")
+                .set("justify-content", "center")
+                .set("align-items", "center");
+
+        // Add reviewers to the container, based on the selected conference
+        conferenceSelect.addValueChangeListener(event -> {
+            int conferenceId = dbConnector.getConferenceId(event.getValue());
+            if (event.getValue() != null) {
+                reviewersContainer.removeAll();
+                List<Reviewer> reviewers = dbConnector.getConferenceReviewers(conferenceId);
+                for (Reviewer reviewer : reviewers) {
+                    reviewersContainer.add(reviewerCard(reviewer));
+                }
+            }
+        });
+
+        // Add the select and the reviewers container to the main container
+        mainContainer.add(conferenceSelect, reviewersContainer);
+
+
+        return mainContainer;
     }
+
 
     private static Div reviewerCard(Reviewer reviewer) {
         // Main div
@@ -357,11 +406,11 @@ public class organizerDashboard extends VerticalMenu {
         secondRow.addClassName("second-row");
 
         // ID
-        Paragraph ID = new Paragraph("ID: " + reviewer.getId());
+        Paragraph ID = new Paragraph("ID: " + reviewer.getId() + " >{   Fix this later}");
         ID.addClassName("user-id");
 
         // Paper count
-        Paragraph paperCount = new Paragraph("Papers: Will be added later");
+        Paragraph paperCount = new Paragraph("Papers No.: Will be added later");
         paperCount.addClassName("paper-count");
 
         // Email
@@ -382,6 +431,7 @@ public class organizerDashboard extends VerticalMenu {
 
         // Edit button
         Button edit = new Button(new Icon(VaadinIcon.EDIT));
+        edit.addClassName("edit-btn");
         edit.getStyle()
                 .set("border-radius", "4px")
                 .set("background-image", "linear-gradient(15deg, rgb(26 26 27 / 21%) 0%, rgb(124 57 201 / 64%) 100%)")
@@ -393,6 +443,26 @@ public class organizerDashboard extends VerticalMenu {
                 .set("border-radius", "100%")
                 .set("width", "4rem")
                 .set("height", "4rem");
+        edit.addClickListener(e -> { Notify.notify("Not implemented yet!", 3000, "warning"); });
+        edit.getElement().setAttribute("title", "Edit");
+
+        // Assign button
+        Button assign = new Button(new Icon(VaadinIcon.CHECK));
+        assign.addClassName("assign-btn");
+        assign.getStyle()
+                .set("border-radius", "4px")
+                .set("background-image", "linear-gradient(15deg, rgb(26 26 27 / 21%) 0%, rgb(124 57 201 / 64%) 100%)")
+                .set("color", "white")
+                .set("font-weight", "bold")
+                .set("font-size", "16px")
+                .set("cursor", "pointer")
+                .set("border", "1px solid rgb(0 0 0 / 10%)")
+                .set("border-radius", "100%")
+                .set("width", "4rem")
+                .set("height", "4rem");
+        assign.addClickListener(e -> { Notify.notify("Not implemented yet!", 3000, "warning"); });
+        assign.getElement().setAttribute("title", "Assign to conference");
+
 
         Button delete = new Button(new Icon(VaadinIcon.TRASH));
         delete.addClassName("delete-button");
@@ -407,10 +477,13 @@ public class organizerDashboard extends VerticalMenu {
                 .set("border-radius", "100%")
                 .set("width", "4rem")
                 .set("height", "4rem");
+        delete.addClickListener(e -> {Notify.notify("Not implemented yet!", 3000, "warning");});
+        delete.getElement().setAttribute("title", "Delete");
 
 
-        thirdRow.add(edit, delete);
+        thirdRow.add(edit, assign, delete);
 
+        // Add all rows to the card
         card.add(firstRow, secondRow, thirdRow);
 
         return card;

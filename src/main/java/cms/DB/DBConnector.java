@@ -13,7 +13,6 @@ public class DBConnector {
 //     public String pass = null;
 
 
-
     Statement stmt;
     Connection conn;
     ResultSet rs;
@@ -201,6 +200,29 @@ public class DBConnector {
         return reviewers;
     }
 
+    public List<Reviewer> getConferenceReviewers(int conferenceId) {
+        List<Reviewer> reviewers = new ArrayList<>();
+
+        String sql = "SELECT * FROM Users WHERE user_id IN (SELECT reviewer_id FROM REVIEWER_CONFERENCE WHERE conference_id = ?)";
+
+        if(stmt != null) {
+            try {
+                java.sql.PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+                preparedStatement.setInt(1, conferenceId);
+
+                rs = preparedStatement.executeQuery();
+
+                while(rs.next()) {
+                    reviewers.add(new Reviewer(rs.getString("USERNAME"), rs.getString("PASSWORD"), rs.getString("NAME"), rs.getString("EMAIL")));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return reviewers;
+    }
+
     public List<Venue> getAvailableVenues() {
         List<Venue> venues = new ArrayList<>();
 
@@ -244,12 +266,12 @@ public class DBConnector {
         return null;
     }
 
-    public boolean registerConference(Conference conference) {
+    public boolean registerConference(Conference conference, List<String> potentialReviewers) {
         int totalConferences = getTotalNumberOfConferences();
 
         String sql = "INSERT INTO Conference (name, start_date, end_date, deadline, conference_code, organizer_id, venue_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        if (stmt != null) {
+        if(stmt != null) {
             try {
                 java.sql.PreparedStatement preparedStatement = conn.prepareStatement(sql);
 
@@ -257,18 +279,80 @@ public class DBConnector {
                 preparedStatement.setString(2, String.valueOf(Date.valueOf(conference.getStartDate())));
                 preparedStatement.setString(3, String.valueOf(Date.valueOf(conference.getEndDate())));
                 preparedStatement.setString(4, String.valueOf(Date.valueOf(conference.getDeadline())));
-                preparedStatement.setString(5, "CONF00" + totalConferences);
+                preparedStatement.setString(5, "CONF" + String.format("%03d", totalConferences + 1));
                 preparedStatement.setInt(6, conference.getOrganizerId());
                 preparedStatement.setInt(7, conference.getVenueId());
 
                 preparedStatement.executeUpdate();
+
+                int conferenceId = getConferenceId(conference.getName());
+
+
+
+                if(conferenceId != 0) {
+                    for(String reviewer : potentialReviewers) {
+                        int reviewerId = getReviewerId(reviewer);
+
+                        if(reviewerId != 0) {
+                            assignReviewerToConference(reviewerId, conferenceId);
+                        }
+                    }
+                }
+
                 return true;
             } catch (SQLException e) {
-                System.out.println(e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    public int getConferenceId(String name) {
+        String sql = "SELECT * FROM Conference WHERE name = ?";
+
+        if(stmt != null) {
+            try {
+                java.sql.PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+                preparedStatement.setString(1, name);
+
+                rs = preparedStatement.executeQuery();
+
+                if(rs.next()) {
+                    return rs.getInt("CONFERENCE_ID");
+                } else {
+                    return 0;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
 
-        return false;
+        return 0;
+    }
+
+    private int getReviewerId(String reviewerUser) {
+        String sql = "SELECT * FROM USERS WHERE USERNAME = ?";
+
+        if(stmt != null) {
+            try {
+                java.sql.PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+                preparedStatement.setString(1, reviewerUser);
+
+                rs = preparedStatement.executeQuery();
+
+                if(rs.next()) {
+                    return rs.getInt("USER_ID");
+                } else {
+                    return 0;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return 0;
     }
 
     public boolean checkForConference(String name) {
@@ -312,8 +396,8 @@ public class DBConnector {
         return 0;
     }
 
-    public void assignReviewerToConference(int conferenceId, int reviewerId) {
-        String sql = "INSERT INTO Reviewer_Conference (conference_id, reviewer_id ) VALUES (?, ?)";
+    public void assignReviewerToConference(int reviewerId, int conferenceId ) {
+        String sql = "INSERT INTO REVIEWER_CONFERENCE (reviewer_id, conference_id) VALUES (?, ?)";
 
         if(stmt != null) {
             try {
@@ -435,6 +519,23 @@ public class DBConnector {
     public List<Reviewer> getAllReviewer() throws SQLException {
         List<Reviewer> reviewers = new ArrayList<>();
         String sql = "select * from USERS where role = 'Reviewer'";
+
+        if(stmt != null) {
+            try {
+                rs = stmt.executeQuery(sql);
+                while(rs.next()) {
+                    reviewers.add(new Reviewer(rs.getString("USERNAME"), rs.getString("PASSWORD"), rs.getString("NAME"), rs.getString("EMAIL")));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return reviewers;
+    }
+
+    public List<Reviewer> getAvailableReviewer() throws SQLException {
+        List<Reviewer> reviewers = new ArrayList<>();
+        String sql = "select * from USERS where role = 'Reviewer' and user_id not in (select reviewer_id from REVIEWER_CONFERENCE)";
 
         if(stmt != null) {
             try {
