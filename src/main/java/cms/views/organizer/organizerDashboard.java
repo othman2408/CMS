@@ -338,7 +338,7 @@ public class organizerDashboard extends VerticalMenu {
         // Avatar
         Avatar avatar = new Avatar();
         avatar.setName(reviewer.getName());
-        avatar.setImage("https://em-content.zobj.net/source/microsoft-teams/363/grinning-face_1f600.png");
+        avatar.setImage("https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Face%20with%20Monocle.png");
         avatar.addClassName("avatar");
 
         // Name
