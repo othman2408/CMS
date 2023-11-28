@@ -118,3 +118,15 @@
     font-weight: bold;
     font-size: 16px;
 }
+
+.register-button {
+    border-radius: 4px;
+    width: auto;
+    padding: 0 3rem;
+    margin: 20px auto;
+    background-image: linear-gradient(to top, rgb(6 185 106 / 35%) 0%, rgb(60 186 146 / 68%) 100%)  ;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+}

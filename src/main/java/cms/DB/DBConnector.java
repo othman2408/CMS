@@ -3,6 +3,7 @@ package cms.DB;
 import cms.Entities.*;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -363,6 +364,74 @@ public class DBConnector {
         return 0;
     }
 
+    public boolean deleteConference(int conferenceId) {
+        String sql = "DELETE FROM Conference WHERE conference_id = ?";
+
+        if(stmt != null) {
+            try {
+                java.sql.PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+                preparedStatement.setInt(1, conferenceId);
+
+                preparedStatement.executeUpdate();
+                return true;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
+    }
+
+    public boolean updateConference(String confName, Conference conference) {
+        // UPDATE Conference SET name = 'Conference 1', start_date = '2024-06-10', end_date = '2024-06-15', deadline = '2024-05-25', conference_code = 'CONF009', organizer_id = 5, venue_id = 1 WHERE name = 'Othman Alibrahim';
+        String sql = "UPDATE Conference SET name = ?, start_date = ?, end_date = ?, deadline = ?, conference_code = ?, organizer_id = ?, venue_id = ? WHERE name = ?";
+        if(stmt != null) {
+            try {
+                java.sql.PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+                preparedStatement.setString(1, conference.getName());
+                preparedStatement.setString(2, String.valueOf(Date.valueOf(conference.getStartDate())));
+                preparedStatement.setString(3, String.valueOf(Date.valueOf(conference.getEndDate())));
+                preparedStatement.setString(4, String.valueOf(Date.valueOf(conference.getDeadline())));
+                preparedStatement.setString(5, conference.getConferenceCode());
+                preparedStatement.setInt(6, conference.getOrganizerId());
+                preparedStatement.setInt(7, conference.getVenueId());
+                preparedStatement.setString(8, confName);
+
+                preparedStatement.executeUpdate();
+                return true;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    public int getOrganizerId(String username) throws SQLException {
+        String sql = "SELECT USER_ID FROM USERS WHERE USERNAME = ?";
+        java.sql.PreparedStatement preparedStatement = conn.prepareStatement(sql);
+        preparedStatement.setString(1, username);
+        rs = preparedStatement.executeQuery();
+        if(rs.next()) {
+            return rs.getInt(1);
+        }
+        return 0;
+    }
+
+    public int getVenueId(String location) throws SQLException {
+        String sql = "SELECT VENUE_ID FROM Venue WHERE LOCATION = ?";
+        java.sql.PreparedStatement preparedStatement = conn.prepareStatement(sql);
+        preparedStatement.setString(1, location);
+        rs = preparedStatement.executeQuery();
+        if(rs.next()) {
+            return rs.getInt(1);
+        }
+        return 0;
+    }
+
+
+
     public List<Reviewer> getAllReviewer() throws SQLException {
         List<Reviewer> reviewers = new ArrayList<>();
         String sql = "select * from USERS where role = 'Reviewer'";
@@ -418,10 +487,14 @@ public class DBConnector {
 //        }
 
         // get the venue, and check if it is available
-        for (Venue v : dbConnector.getAllVenues()) {
-            System.out.println(v.getLocation() + " " + v.isAvailable());
-        }
+//        for (Venue v : dbConnector.getAllVenues()) {
+//            System.out.println(v.getLocation() + " " + v.isAvailable());
+//        }
 
+//        UPDATE Conference SET name = 'Conference 1', start_date = '2024-06-10', end_date = '2024-06-15', deadline = '2024-05-25', conference_code = 'CONF009', organizer_id = 5, venue_id = 1 WHERE name = 'Othman Alibrahim';
+        Conference conference = new Conference("Qatat Conf", LocalDate.of(2024, 6, 10), LocalDate.of(2024, 6, 15), LocalDate.of(2024, 5, 25), "CONF889", 5, 1);
+
+        dbConnector.updateConference("Conference 1", conference);
 
     }
 

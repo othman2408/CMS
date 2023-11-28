@@ -65,7 +65,7 @@ public class organizerDashboard extends VerticalMenu {
 
     private static Section createMyConferencesSection() {
         try {
-            return new Section(new H1("My Conferences"), organizerConferences(loggedInUser));
+            return new Section(new H1("My Conferences"), organizerConferences());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -109,7 +109,6 @@ public class organizerDashboard extends VerticalMenu {
                 .set("display", "flex")
                 .set("align-items", "baseline")
                 .set("gap", "10px")
-                .set("margin-bottom", "15px")
                 .set("width", "100%");
 
         MultiSelectComboBox<String> reviewerSelect = createReviewerSelect(cms.getReviewers() );
@@ -120,17 +119,7 @@ public class organizerDashboard extends VerticalMenu {
         Select<String> venueSelect = createVenueSelect(dbConnector.getAvailableVenues());
 
         Button Create = new Button("Register");
-        Create.getStyle().set("margin-top", "15px")
-                .set("border-radius", "4px")
-                .set("width", "auto")
-                .set("padding", "0 3rem")
-                .set("margin", "auto")
-                .set("background-image",
-                        "linear-gradient(to top, rgb(6 185 106 / 35%) 0%, rgb(60 186 146 / 68%) 100%)  ")
-                .set("color", "white")
-                .set("font-weight", "bold")
-                .set("font-size", "16px")
-                .set("cursor", "pointer");
+        Create.addClassName("register-button");
 
         Create.addClickListener(e -> {
             int organizerId;
@@ -138,17 +127,17 @@ public class organizerDashboard extends VerticalMenu {
             try {
                 organizerId = dbConnector.getUser(loggedInUser).getId();
                 venueId = dbConnector.getVenue(venueSelect.getValue()).getVenueId();
-            } catch (SQLException ex) {
+                handleConferenceRegister(name, startDate, endDate, deadline, reviewerSelect, venueSelect, organizerId, venueId);
+            } catch (SQLException | InterruptedException ex) {
                 throw new RuntimeException(ex);
             }
-            handleConferenceRegister(Create, name, startDate, endDate, deadline, reviewerSelect, venueSelect, organizerId, venueId);
         });
 
         container.add(title, name, startDate, endDate, deadline,reviewerDiv, venueSelect, Create);
         return container;
     }
 
-    private static void handleConferenceRegister(Button create, TextField name, DatePicker startDate, DatePicker endDate, DatePicker deadline, MultiSelectComboBox<String> reviewerSelect, Select<String> venueSelect, int organizerID, int venueID) {
+    private static void handleConferenceRegister(TextField name, DatePicker startDate, DatePicker endDate, DatePicker deadline, MultiSelectComboBox<String> reviewerSelect, Select<String> venueSelect, int organizerID, int venueID) throws InterruptedException {
         if (name.getValue().isEmpty() || startDate.getValue() == null || endDate.getValue() == null || deadline.getValue() == null) {
             Notify.notify("Please fill all the fields", 3000, "warning");
             return;
@@ -177,6 +166,11 @@ public class organizerDashboard extends VerticalMenu {
 
         if (register) {
             Notify.notify("Conference registered successfully", 3000, "success");
+
+            // refresh the page to show the new conference, not the best solution but it works
+            String script = "setTimeout(function(){ location.reload(); }, 3000);";
+            UI.getCurrent().getPage().executeJs(script);
+
             // Clear fields
             name.clear();
             startDate.clear();
@@ -194,7 +188,6 @@ public class organizerDashboard extends VerticalMenu {
         textField.setPlaceholder("Enter conference name");
         textField.setRequired(true);
         textField.getStyle()
-                .set("margin-bottom", "15px")
                 .set("border-radius", "4px")
                 .set("width", "100%");
         return textField;
@@ -424,8 +417,7 @@ public class organizerDashboard extends VerticalMenu {
 
     }
 
-
-    private static VerticalLayout organizerConferences(String organizerUser) throws SQLException {
+    private static VerticalLayout organizerConferences() throws SQLException {
 
         VerticalLayout container = new VerticalLayout();
         container.getStyle()
@@ -438,30 +430,10 @@ public class organizerDashboard extends VerticalMenu {
         title.getStyle().set("text-align", "center")
                 .set("margin", "auto");
 
-        Grid<Conference> grid = new Grid<>(Conference.class, false);
-        grid.getStyle()
-                .set("margin", "auto")
-                .set("margin-top", "3rem")
-                .set("width", "90%")
-                .set("background-image", "linear-gradient(to top, rgb(122 183 233 / 74%) 0%, rgb(160 185 157) 100%)");
+        ConferencesGrid grid = new ConferencesGrid();
 
-        // Set the Height of the grid to be dynamic
-        grid.setAllRowsVisible(true);
 
-        List<Conference> conferences = dbConnector.getOrganizerConferences(organizerUser);
-
-        // Add columns to the grid
-        grid.addColumn(Conference::getName).setHeader("Name");
-        grid.addColumn(Conference::getStartDate).setHeader("Start Date");
-        grid.addColumn(Conference::getEndDate).setHeader("End Date");
-        grid.addColumn(Conference::getDeadline).setHeader("Deadline");
-        grid.addColumn(Conference::getConferenceCode).setHeader("Code");
-        grid.addColumn(Conference::getOrganizerName).setHeader("Organizer");
-        grid.addColumn(Conference::getVenueName).setHeader("Location");
-
-        grid.setItems(conferences);
-
-        container.add(title, grid);
+        container.add(title,grid);
 
         return container;
     }

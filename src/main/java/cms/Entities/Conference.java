@@ -39,16 +39,7 @@ public class Conference {
         this.venueId = venueId;
     }
 
-    public Conference(int conferenceId, String name, LocalDate startDate, LocalDate endDate, LocalDate deadline, String conferenceCode, String organizerName, String venueName) {
-        this.conferenceId = conferenceId;
-        this.name = name;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.deadline = deadline;
-        this.conferenceCode = conferenceCode;
-        this.organizerName = organizerName;
-        this.venueName = venueName;
-    }
+
 
     public Conference(int conferenceId, String name, LocalDate startDate, LocalDate endDate, LocalDate deadline, String conferenceCode, List<Reviewer> reviewers, List<Venue> venues, List<Paper> papers, int organizerId, int venueId) {
         this.conferenceId = conferenceId;
@@ -62,6 +53,27 @@ public class Conference {
         this.papers = papers;
         this.organizerId = organizerId;
         this.venueId = venueId;
+    }
+
+    public Conference(String name, LocalDate startDate, LocalDate endDate, LocalDate deadline, String conferenceCode, int organizerId, int venueId) {
+        this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.deadline = deadline;
+        this.conferenceCode = conferenceCode;
+        this.organizerId = organizerId;
+        this.venueId = venueId;
+    }
+
+    public Conference(int conferenceId, String name, LocalDate startDate, LocalDate endDate, LocalDate deadline, String conferenceCode, String organizer, String venue) {
+        this.conferenceId = conferenceId;
+        this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.deadline = deadline;
+        this.conferenceCode = conferenceCode;
+        this.organizerName = organizer;
+        this.venueName = venue;
     }
 
 
