@@ -103,7 +103,7 @@ public class organizerDashboard extends VerticalMenu {
         DatePicker deadline = new DatePicker("Deadline");
         deadline.setWidth("100%");
         deadline.setRequired(true);
-        deadline.setPlaceholder("Select a deadline date");
+        deadline.setPlaceholder("Select a deadline date (for papers submission)");
 
         Div reviewerDiv = new Div();
         reviewerDiv.getStyle()
@@ -141,7 +141,7 @@ public class organizerDashboard extends VerticalMenu {
             }
         });
 
-        container.add(title, name, startDate, endDate, deadline,reviewerDiv, venueSelect, Create);
+        container.add(title, name, startDate, deadline, endDate, venueSelect,reviewerDiv, Create);
         return container;
     }
 
@@ -174,10 +174,10 @@ public class organizerDashboard extends VerticalMenu {
         boolean register = dbConnector.registerConference(conference,potentialReviewers);
 
         if (register) {
-            Notify.notify("Conference registered successfully", 3000, "success");
+            Notify.notify("Conference has been created successfully", 3000, "success");
 
             // refresh the page to show the new conference, not the best solution, but it works
-            String script = "setTimeout(function(){ location.reload(); }, 3000);";
+            String script = "setTimeout(function(){ location.reload(); }, 2500);";
             UI.getCurrent().getPage().executeJs(script);
 
             // Clear fields
@@ -206,7 +206,7 @@ public class organizerDashboard extends VerticalMenu {
         MultiSelectComboBox<String> reviewerSelect = new MultiSelectComboBox<>();
         reviewerSelect.setWidth("100%");
 
-        reviewerSelect.setLabel("Select Reviewers or Add New Ones");
+        reviewerSelect.setLabel("Select Reviewers or Add New Ones (Optional)");
         reviewerSelect.setPlaceholder("Select reviewers");
 
         Set<String> reviewerNames = reviewers.stream().map(Reviewer::getUsername).collect(Collectors.toSet());
@@ -324,13 +324,20 @@ public class organizerDashboard extends VerticalMenu {
         Select<String> conferenceSelect = new Select<>();
         conferenceSelect.setLabel("Select Conference");
         conferenceSelect.setPlaceholder("Select a conference");
+        conferenceSelect.setHelperText("Select a conference to view its reviewers");
         conferenceSelect.getStyle()
                 .set("width", "100%")
                 .set("margin-bottom", "2rem");
 
         // Get conferences names from the database
-        List<String> confNames= new ArrayList<>();
+        List<String> confNames;
         confNames = dbConnector.getOrganizerConferences(loggedInUser).stream().map(Conference::getName).collect(Collectors.toList());
+
+        // if there is no conferences, add a placeholder
+        if (confNames.isEmpty()) {
+            confNames.add("No conferences found");
+        }
+
 
         // Add conferences to the select
         conferenceSelect.setItems(confNames);

@@ -25,6 +25,15 @@ CREATE TABLE Conference (
                             FOREIGN KEY (venue_id) REFERENCES Venue(venue_id)
 );
 
+CREATE TABLE Reviewer_Conference (
+                                     reviewer_id NUMBER,
+                                     conference_id NUMBER,
+                                     PRIMARY KEY (reviewer_id, conference_id),
+                                     FOREIGN KEY (reviewer_id) REFERENCES Users(user_id),
+                                     FOREIGN KEY (conference_id) REFERENCES Conference(conference_id)ON DELETE CASCADE
+);
+
+--No need for them now
 CREATE TABLE Keyword (
                          keyword_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
                          keyword_name VARCHAR2(50) UNIQUE
@@ -50,21 +59,47 @@ CREATE TABLE Paper_Keyword (
 );
 
 
--- Inserting sample data into the Users table
-INSERT INTO Users (username, password, NAME, email, role)
-VALUES ('user1', 'pass1', 'John Doe', 'john@example.com', 'Author');
 
-INSERT INTO Users (username, password, NAME, email, role)
-VALUES ('user2', 'pass2', 'Alice Smith', 'alice@example.com', 'Reviewer');
+-- Inserting REVIEWERS AS sample data into the Users table
+-- Insert Reviewer 1
+INSERT INTO Users (username, password, name, email, role)
+VALUES ('john', 'pass1', 'John Doe', 'john@example.com', 'Reviewer');
 
-INSERT INTO Users (username, password, NAME, email, role)
-VALUES ('user3', 'pass3', 'Emma Johnson', 'emma@example.com', 'Author');
+-- Insert Reviewer 2
+INSERT INTO Users (username, password, name, email, role)
+VALUES ('alice', 'pass2', 'Alice Smith', 'alice@example.com', 'Reviewer');
 
-INSERT INTO Users (username, password, NAME, email, role)
-VALUES ('user4', 'pass4', 'Mike Wilson', 'mike@example.com', 'Reviewer');
+-- Insert Reviewer 3
+INSERT INTO Users (username, password, name, email, role)
+VALUES ('eva', 'pass3', 'Eva Brown', 'eva@example.com', 'Reviewer');
 
-INSERT INTO Users (username, password, NAME, email, role)
-VALUES ('user5', 'pass5', 'Sophia Brown', 'sophia@example.com', 'Organizer');
+-- Insert Reviewer 4
+INSERT INTO Users (username, password, name, email, role)
+VALUES ('mike', 'pass4', 'Mike Wilson', 'mike@example.com', 'Reviewer');
+
+-- Insert Reviewer 5
+INSERT INTO Users (username, password, name, email, role)
+VALUES ('sophia', 'pass5', 'Sophia Johnson', 'sophia@example.com', 'Reviewer');
+
+-- Insert Reviewer 6
+INSERT INTO Users (username, password, name, email, role)
+VALUES ('daniel', 'pass6', 'Daniel Lee', 'daniel@example.com', 'Reviewer');
+
+-- Insert Reviewer 7
+INSERT INTO Users (username, password, name, email, role)
+VALUES ('olivia', 'pass7', 'Olivia Garcia', 'olivia@example.com', 'Reviewer');
+
+-- Insert Reviewer 8
+INSERT INTO Users (username, password, name, email, role)
+VALUES ('william', 'pass8', 'William Martinez', 'william@example.com', 'Reviewer');
+
+-- Insert Reviewer 9
+INSERT INTO Users (username, password, name, email, role)
+VALUES ('emily', 'pass9', 'Emily Anderson', 'emily@example.com', 'Reviewer');
+
+-- Insert Reviewer 10
+INSERT INTO Users (username, password, name, email, role)
+VALUES ('liam', 'pass10', 'Liam Lopez', 'liam@example.com', 'Reviewer');
 
 
 -- Inserting sample data into the Venue table
@@ -166,25 +201,29 @@ SELECT * FROM Venue WHERE venue_id NOT IN (SELECT venue_id FROM Conference);
 
 
 
--- Drop the tables
-DROP TABLE Paper_Keyword;
-DROP TABLE Paper;
-DROP TABLE Keyword;
-DROP TABLE Conference;
-DROP TABLE Venue;
-DROP TABLE Users;
-
-commit;
-
-
--- delete all tables
-
+-- Drop the tables, views and sequences, in correct order
 DROP VIEW Conference_View;
 DROP VIEW Available_Venues;
 
 DROP TABLE Paper_Keyword;
 DROP TABLE Paper;
 DROP TABLE Keyword;
+DROP TABLE REVIEWER_CONFERENCE;
 DROP TABLE Conference;
 DROP TABLE Venue;
 DROP TABLE Users;
+
+
+commit;
+
+
+
+-- show all tables
+select *
+from REVIEWER_CONFERENCE;
+select * from Conference;
+
+select * from USERS where role = 'Reviewer' and user_id not in (select reviewer_id from REVIEWER_CONFERENCE);
+
+-- get reviewers of specific conference
+select * from Users where user_id in (select reviewer_id from REVIEWER_CONFERENCE where conference_id = 33);

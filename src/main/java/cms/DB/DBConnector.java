@@ -13,6 +13,7 @@ public class DBConnector {
 //     public String pass = null;
 
 
+
     Statement stmt;
     Connection conn;
     ResultSet rs;
@@ -449,21 +450,18 @@ public class DBConnector {
     }
 
     public boolean deleteConference(int conferenceId) {
+        // use cascade delete, so that all the related data will be deleted
         String sql = "DELETE FROM Conference WHERE conference_id = ?";
-
         if(stmt != null) {
             try {
                 java.sql.PreparedStatement preparedStatement = conn.prepareStatement(sql);
-
                 preparedStatement.setInt(1, conferenceId);
-
                 preparedStatement.executeUpdate();
                 return true;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
-
         return false;
     }
 
