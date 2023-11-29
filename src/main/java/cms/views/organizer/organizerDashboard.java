@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class organizerDashboard extends VerticalMenu {
-    public static String loggedInUser = VaadinSession.getCurrent().getAttribute("username").toString();
+    public static String loggedInUser;
     private static final CMS cms = new CMS();
     private static final cms.DB.DBConnector dbConnector;
 
@@ -53,6 +53,7 @@ public class organizerDashboard extends VerticalMenu {
 
 
     private static Section createAccountSection() throws SQLException {
+        loggedInUser = VaadinSession.getCurrent().getAttribute("username").toString();
         return new Section(new H1("My Account"), userCard(dbConnector.getUser(loggedInUser)));
     }
 
