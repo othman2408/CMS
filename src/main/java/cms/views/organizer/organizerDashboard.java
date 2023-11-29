@@ -113,7 +113,7 @@ public class organizerDashboard extends VerticalMenu {
                 .set("width", "100%");
 
         MultiSelectComboBox<String> reviewerSelect = createReviewerSelect(dbConnector.getAvailableReviewer());
-        RegisterDialog registerDialog = new RegisterDialog("Add new", "Add");
+        RegisterDialog registerDialog = new RegisterDialog("Add new reviewer", "Add");
         registerDialog.addClassName("reviewer-dialog");
         reviewerDiv.add(reviewerSelect, registerDialog);
 

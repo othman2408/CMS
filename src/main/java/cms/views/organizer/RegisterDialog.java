@@ -3,6 +3,7 @@ package cms.views.organizer;
 import cms.DB.DBConnector;
 import cms.Entities.Reviewer;
 import cms.views.shardCom.Notify;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -56,9 +57,29 @@ public class RegisterDialog extends Div {
     private static VerticalLayout createDialogLayout() {
 
         name = new TextField("Name");
+        name.setRequired(true);
+        name.setRequiredIndicatorVisible(true);
+        name.setPlaceholder("Enter reviewer's full name");
+
         userNameField = new TextField("Username");
+        userNameField.setRequired(true);
+        userNameField.setRequiredIndicatorVisible(true);
+        userNameField.setPlaceholder("Enter reviewer's username");
+        userNameField.setMinLength(4);
+        userNameField.setErrorMessage("Username must be at least 4 characters long");
+
         password = new PasswordField("Password");
+        password.setRequired(true);
+        password.setRequiredIndicatorVisible(true);
+        password.setPlaceholder("Enter reviewer's password");
+        password.setMinLength(8);
+        password.setErrorMessage("Password must be at least 8 characters long");
+
         email = new EmailField("Email");
+        email.setRequired(true);
+        email.setRequiredIndicatorVisible(true);
+        email.setPlaceholder("Enter reviewer's email");
+        email.setErrorMessage("Please enter a valid email address");
 
         VerticalLayout dialogLayout = new VerticalLayout(name, userNameField, password, email);
         dialogLayout.setPadding(false);
@@ -77,17 +98,24 @@ public class RegisterDialog extends Div {
                 if (check) {
                     Notify.notify("User already exists, please try again", 3000, "error");
                 } else {
-                    dbConnector.registerUser(new Reviewer(userNameField.getValue(), password.getValue(),
-                            name.getValue(), email.getValue()));
-                    Notify.notify("User added", 2000, "success");
-                    dialog.close();
+                    boolean register = dbConnector.registerUser(new Reviewer(userNameField.getValue(), password.getValue(), name.getValue(), email.getValue()));
+                    if (!register) {
+                        Notify.notify("Something went wrong, please try again", 3000, "error");
+                        return;
+                    }else {
+                        Notify.notify("User added successfully", 3000, "success");
+                        dialog.close();
 
-                    // Clear fields
-                    userNameField.clear();
-                    password.clear();
-                    name.clear();
-                    email.clear();
+                        // Refresh the page to show the new user
+                        UI.getCurrent().getPage().executeJs("setTimeout(function() {location.reload();}, 2000);");
 
+
+                        // Clear fields after closing dialog
+                        userNameField.clear();
+                        password.clear();
+                        name.clear();
+                        email.clear();
+                    }
                 }
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
